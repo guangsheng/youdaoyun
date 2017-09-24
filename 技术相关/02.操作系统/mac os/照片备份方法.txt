@@ -1,0 +1,33 @@
+########一条命令  awk
+for file in `ls -lR 01 |grep rw |grep -v '^d' | awk -F" " '{print $9}'`
+do
+    echo "test: mv $file 01_backup/"
+    mv $file 01_backup/
+done
+
+
+### 需要替换目录名称  01 以及 01_backup
+for file in `find 01 -iname "*.PNG"`
+do
+    echo "test: mv $file 01_backup/"
+    mv $file 01_backup/
+done
+
+
+for file in `find 01 -iname "*.JPG"`
+do
+    echo "test: mv $file 01_backup/"
+    mv $file 01_backup/
+done
+
+for file in `find 01 -iname "*.MOV"`
+do
+    echo "test: mv $file 01_backup/"
+    mv $file 01_backup/
+done
+
+for file in `find 01 -iname "*.mp4"`
+do
+    echo "test: mv $file 01_backup/"
+    mv $file 01_backup/
+done

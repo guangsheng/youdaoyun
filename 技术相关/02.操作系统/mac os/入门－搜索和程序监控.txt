@@ -1,0 +1,9 @@
+搜索程序和文档
+Spotlight是最最常用的东西， 类似Windows开始菜单中的搜索。  可以用来搜索文档，也可以搜索本机的程序。 这样可以快速启动。 这个东西基本每天都用
+点击右上角的“放大镜”图标，或者快捷键： Command+Space. 来调用Spotlight
+
+使用Activity monitor结束未响应的程序
+
+Mac中的程序也经常卡死。 Windows中有任务管理器，可以用来查看本机运行的进程的状态， 和结束进程。 Mac中的Activity monitor(活动监视器)有差不多的功能。
+1. 在Spotlight中搜索 activity， 可以快速启动Activity monitor
+2. 也可以这样启动，先点Lunchpad->Utilitys->Activity Monitor

@@ -1,0 +1,5 @@
+安装brew
+brew 的官方网站： http://brew.sh/   在官方网站对brew的用法进行了详细的描述
+安装方法：  在Mac中打开Termal:  输入命令：
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+

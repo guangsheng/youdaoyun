@@ -1,0 +1,23 @@
+rpm管理
+安装：rpm -ivh
+强制安装：--nodeps
+查询：rpm -q
+		选项：
+		-a 查询所有已安装的软件包.
+		-f 查询文件所属软件包
+		-p 查询软件包
+		-i 显示软件包信息
+		-l 显示软件包中的文件列表
+		-d 显示被标注为文档的文件列表
+		-c 显示被标注为配置文件的文件列表
+卸载：rpm -e
+
+
+yum管理
+安装：yum install
+检测升级：yum check-update
+升级： yum update
+查询： yum list
+查询详细信息： yum info [software_name]
+卸载： yum remove
+反查程序在哪个安装包中：yum whatprovides 

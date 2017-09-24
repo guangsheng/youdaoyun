@@ -1,0 +1,11 @@
+重庆大学镜像：http://b.mirrors.lanunion.org/CentOS/
+中国科学技术大学镜像：http://centos.ustc.edu.cn/centos/
+上海交通大学镜像：http://ftp.sjtu.edu.cn/centos/
+华中科技大学镜像：http://mirrors.hust.edu.cn/centos/
+北京理工大学镜像：http://mirror.bit.edu.cn/centos/
+西北农林科技大学镜像：http://mirrors.nwsuaf.edu.cn/centos/
+大连东软信息学院镜像：http://mirrors.neusoft.edu.cn/centos/
+网易镜像：http://mirrors.163.com/centos/
+清华大学镜像：https://mirrors.tuna.tsinghua.edu.cn/centos/
+
+rpm包位置：http://mirrors.163.com/centos/7.3.1611/os/x86_64/Packages/

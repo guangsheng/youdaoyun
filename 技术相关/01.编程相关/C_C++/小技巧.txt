@@ -1,0 +1,14 @@
+1, 数组大小计算
+/*
+ * lengthof
+ *        Number of elements in an array.
+ */
+#define lengthof(array) (sizeof (array) / sizeof ((array)[0]))
+
+
+2， 链表的简单实现--链头增删
+    pending = (PendingRelDelete *)
+        MemoryContextAlloc(TopMemoryContext, sizeof(PendingRelDelete));
+    pending->isTemp = isTemp;
+    pending->next = pendingDeletes;
+    pendingDeletes = pending;

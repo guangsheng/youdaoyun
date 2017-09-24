@@ -1,0 +1,8 @@
+1.编辑~/.bash_profile， 
+通常这个文件是不存在的，那么新建它
+，有的话就打开修改添加。 
+2.vim ~/.bash_profile 添加 
+alias ll="ls -Al"
+alias ..="cd .."
+，这里需要注意的是，等号前后不能出现空格。 
+3.bash下执行"source ~/.bash_profile"，此条命令是使bash重新载入配置令刚才命令生效。

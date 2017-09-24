@@ -1,0 +1,1 @@
+打开Finder, 到Application文件夹下，找到你要卸载的软件，右键，选择Move To Trash. 就卸载好了

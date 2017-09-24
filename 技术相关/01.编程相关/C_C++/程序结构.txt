@@ -1,0 +1,54 @@
+1，编译预处理
+1)
+#include <db.h>
+#include "db.h"
+2)
+#ifndef XXX
+#define XXX
+#endif
+3)推荐的头文件包含的顺序
+包含当前工程中所需要的自定义的头文件
+包含第三方程序库的头文件
+包含标准库的头文件
+4）宏 编译预处理阶段进行简单的文本替换
+      #udef TEXT   取消宏定义
+5）条件编译
+#if      #elif     #else
+#ifdef     #ifndef
+#error    用于输出与平台、环境有关的信息
+#pragma    用于执行语言实现所定义的动作
+       #pragma pack(push,8)
+       #pragma pack(pop)
+       ...
+#   构串操作符   只能修饰带参数的宏的形参，它将实参的字符序列转换成字符串常量
+    如  
+    #define TEXT(x)  "class" #x "Info"
+    int abc = 100;
+    TEXT(abc)       展开后就是   "classabcinfo"
+##  合并操作符  将出现在其左右的字符序列合并成一个新的标识符。
+    如
+    #define MERGE(x,y) x##y##x
+    MERGE(me, To)   展开后就是   meTome
+2，预定义符号常量
+__LINE__    引用该符号语句的代码行号
+__FILE__    源文件名称
+__DATA__   源文件被编译的日期
+__TIME__    源文件被编译的时间
+__TIMESTAMP__  源文件被编译的日期和时间
+__STDC__    用于标识当前环境
+3，程序的目录结构： 好的目录结构有助于阅读代码和代码维护
+include,src,shared,resource,debug,release,bin
+1）版权和版本信息
+版权信息
+文件名称、简要描述、创建日期和作者
+当前版本信息和说明
+历史版本信息和修订说明
+2）推荐的头文件结构顺序
+文件注释（文件说明、功能描述、版权说明）
+内部包含卫哨开始
+包含其他头文件
+外部变量和全局函数声明
+常量和宏定义
+类型前置声明和定义
+全局函数原型和内联函数的定义
+内部包含卫哨结束

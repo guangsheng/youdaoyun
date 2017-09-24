@@ -1,0 +1,30 @@
+前提：使用虚拟机安装CentOS后没有自动配置小网IP
+
+步骤记录：
+1. 使用ifconfig 查看网卡名称
+2. 进入 /etc/sysconfig/network-scripts/ 目录，编辑对应网卡(ifcfg-encss)。关注如下字段（如果没有则增加）
+DEVICE=eth0                  #网卡对应的设备别名
+BOOTPROTO=static             #网卡获得ip地址的方式（默认为dhcp，表示自动获取）
+HWADDR=00:07:E9:05:E8:B4     #网卡MAC地址（物理地址）
+IPADDR=192.168.100.100       #IP地址
+NETMASK=255.255.255.0        #子网掩码 
+ONBOOT=yes                   #系统启动时是否激活此设备
+
+3. 使用ifdown,ifup命令重启对应网卡
+
+4. 重启SSH服务后就可以用xshell连接了
+service sshd restart
+
+附：检查ssh相关软件是否已经按照的方法
+rpm -qa |grep ssh
+
+## 之后的步骤配置访问外网
+5. 虚拟机网络连接模式选择NAT
+6. 编辑虚拟机机器的DNS配置文件/etc/resolv.conf ,将nameserver 设置为VM 中NAT的网关地址
+查询网关地址方法：Vmware->Edit->Virtual Network Editor 选中NAT，点击NAT Setting
+nameserver 192.168.59.2  
+7. 编辑网卡配置文件( /etc/sysconfig/network-scripts/目录下)，设置GATEWAY为NAT的网关地址
+GATEWAY=192.168.59.2
+
+测试：
+ping www.baidu.com
