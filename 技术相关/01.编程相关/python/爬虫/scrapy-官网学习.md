@@ -1,4 +1,4 @@
-### ¼Ü¹¹
+### æž¶æž„
 ![image](https://docs.scrapy.org/en/latest/_images/scrapy_architecture_02.png)
 
 https://docs.scrapy.org/en/latest/topics/architecture.html  

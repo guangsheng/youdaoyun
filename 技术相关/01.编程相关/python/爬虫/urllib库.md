@@ -1,5 +1,5 @@
-#### python2ºÍpython3µÄÇø±ğ
-**python2ÊÇÁ½¸ö¿â£¬urllibºÍurllib2£¬python3ÖĞ½«urllib2ºÏ²¢µ½ÁËurllib**
+#### python2å’Œpython3çš„åŒºåˆ«
+**python2æ˜¯ä¸¤ä¸ªåº“ï¼Œurllibå’Œurllib2ï¼Œpython3ä¸­å°†urllib2åˆå¹¶åˆ°äº†urllib**
 python2|python3
 -------|-------
 import urllib2|import urllib.request, urllib.error
@@ -11,29 +11,29 @@ urllib.quote|urllib.request.quote
 cookielib.CookieJar|http.CookieJar
 urllib2.Request|urllib.request.Request
 
-#### ³£¼û´íÎóÂë
-´íÎóÂë|º¬Òå
+#### å¸¸è§é”™è¯¯ç 
+é”™è¯¯ç |å«ä¹‰
 --|--
-200|OK,Ò»ÇĞÕı³£
-301|Moved Permanently£¬ÖØ¶¨Ïòµ½ĞÂµÄURL£¬ÓÀ¾ÃĞÔ
-302|Found£¬ÖØ¶¨Ïòµ½ÁÙÊ±µÄURL£¬·ÇÓÀ¾ÃĞÔ
-304|Not Modified£¬ÇëÇóµÄ×ÊÔ´Î´¸üĞÂ
-400|Bad Request£¬·Ç·¨ÇëÇó
-401|Unauthorized£¬ÇëÇóÎ´ÊÚÈ¨
-403|Forbidden£¬½ûÖ¹·ÃÎÊ
-404|Not Found£¬Ã»ÓĞÕÒµ½¶ÔÓ¦Ò³Ãæ
-500|Internal Server Error£¬·şÎñÆ÷ÄÚ²¿³öÏÖ´íÎó
-501|Not Implemented£¬·şÎñÆ÷²»Ö§³ÖÊµÏÖÇëÇóËùĞèÒªµÄ¹¦ÄÜ
+200|OK,ä¸€åˆ‡æ­£å¸¸
+301|Moved Permanentlyï¼Œé‡å®šå‘åˆ°æ–°çš„URLï¼Œæ°¸ä¹…æ€§
+302|Foundï¼Œé‡å®šå‘åˆ°ä¸´æ—¶çš„URLï¼Œéæ°¸ä¹…æ€§
+304|Not Modifiedï¼Œè¯·æ±‚çš„èµ„æºæœªæ›´æ–°
+400|Bad Requestï¼Œéæ³•è¯·æ±‚
+401|Unauthorizedï¼Œè¯·æ±‚æœªæˆæƒ
+403|Forbiddenï¼Œç¦æ­¢è®¿é—®
+404|Not Foundï¼Œæ²¡æœ‰æ‰¾åˆ°å¯¹åº”é¡µé¢
+500|Internal Server Errorï¼ŒæœåŠ¡å™¨å†…éƒ¨å‡ºç°é”™è¯¯
+501|Not Implementedï¼ŒæœåŠ¡å™¨ä¸æ”¯æŒå®ç°è¯·æ±‚æ‰€éœ€è¦çš„åŠŸèƒ½
 
-#### ´úÂë
+#### ä»£ç 
 ```
 sdir = "D:/temp/Python3/myweb"
 ```
-#### GET·½·¨»ñÈ¡ÍøÒ³
+#### GETæ–¹æ³•è·å–ç½‘é¡µ
 ```Python
 surl = "http://www.baidu.com/s?wd="
-key="Êı¾İÍÚ¾ò"
-# ½â¾öÖĞÎÄ±àÂëÎÊÌâ
+key="æ•°æ®æŒ–æ˜"
+# è§£å†³ä¸­æ–‡ç¼–ç é—®é¢˜
 key_code=urllib2.quote(key)
 surl_all=surl+key_code;
 try:
@@ -48,19 +48,19 @@ fh.write(data)
 fh.close()
 ```
 
-#### POST·½·¨»ñÈ¡ÍøÒ³
+#### POSTæ–¹æ³•è·å–ç½‘é¡µ
 ```Python
 surl = "http://yum.iqianyue.com/mypost/"
 postdata = urllib.urlencode({
 "name":"ceo@iqianyue.com",
 "pass":"aA123456"
 }).encode('utf-8')
-#reqºÍurl£¬postdata°ó¶¨
+#reqå’Œurlï¼Œpostdataç»‘å®š
 req = urllib2.Request(surl, postdata)
-#Ìí¼Óheader£¬Ä£Äâä¯ÀÀÆ÷
+#æ·»åŠ headerï¼Œæ¨¡æ‹Ÿæµè§ˆå™¨
 req.add_header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) \
         AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36")
-#»ñÈ¡ÍøÒ³ĞÅÏ¢
+#è·å–ç½‘é¡µä¿¡æ¯
 try:
     data = urllib2.urlopen(req).read()
 except urllib2.URLError as e:
@@ -73,9 +73,9 @@ fh.write(data)
 fh.close()
 ```
 
-#### Ò»Ğ©³£ÓÃ¹¦ÄÜ
-##### Ä£Äâä¯ÀÀÆ÷£º·ÀÖ¹Ä³Ğ©ÍøÕ¾½ûÖ¹ÓÃÅÀ³æ·ÃÎÊÍøÒ³
-ÔÚheaderÖĞÔö¼ÓUser-AgentĞÅÏ¢
+#### ä¸€äº›å¸¸ç”¨åŠŸèƒ½
+##### æ¨¡æ‹Ÿæµè§ˆå™¨ï¼šé˜²æ­¢æŸäº›ç½‘ç«™ç¦æ­¢ç”¨çˆ¬è™«è®¿é—®ç½‘é¡µ
+åœ¨headerä¸­å¢åŠ User-Agentä¿¡æ¯
 ```Python
 surl = "http://blog.csdn.net/shudaqi2010/article/details/43447363"
 opener = urllib2.build_opener()
@@ -84,21 +84,21 @@ headers = ("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) \
 opener.addheaders=[headers]
 data=opener.open(surl).read()
 ```
-##### ³¬Ê±ÉèÖÃ
-openurlÖĞÖ¸¶¨timeout²ÎÊı
+##### è¶…æ—¶è®¾ç½®
+openurlä¸­æŒ‡å®štimeoutå‚æ•°
 ```Python
 file=urllib2.urlopen("http://yum.iqianyue.com", timeout=60)
 ```
 
-##### ÉèÖÃ´úÀí·şÎñÆ÷
-build_opener¿ÉÒÔ´«Èë¶à¸ö²ÎÊı£¬Èç¹ûÏëÒª¶à¸öÅäÖÃÉúĞ§£¬ĞèÒªÒ»´ÎĞÔ½«Æä´«Èë
+##### è®¾ç½®ä»£ç†æœåŠ¡å™¨
+build_openerå¯ä»¥ä¼ å…¥å¤šä¸ªå‚æ•°ï¼Œå¦‚æœæƒ³è¦å¤šä¸ªé…ç½®ç”Ÿæ•ˆï¼Œéœ€è¦ä¸€æ¬¡æ€§å°†å…¶ä¼ å…¥
 ```Python
 def user_proxy(proxy_addr):
     proxy = urllib2.ProxyHandler({'http':proxy_addr})
     opener = urllib2.build_opener(proxy, urllib2.HTTPHandler)
     urllib2.install_opener(opener)
 ```
-##### debugÈÕÖ¾¿ª¹Ø
+##### debugæ—¥å¿—å¼€å…³
 ```Python
 def open_url_debug():
     httpd = urllib2.HTTPHandler(debuglevel=1)
@@ -106,7 +106,7 @@ def open_url_debug():
     opener = urllib2.build_opener(httpd, httpshd)
     urllib2.install_opener(opener)
 ```
-##### Ö±½Ó×ª´¢ÍøÒ³
+##### ç›´æ¥è½¬å‚¨ç½‘é¡µ
 ```Python
 urllib.urlretrieve("http://edu.51cto.com", filename=""+sdir+"/2.html")
 ```

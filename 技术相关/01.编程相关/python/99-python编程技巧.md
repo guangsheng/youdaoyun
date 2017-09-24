@@ -1,24 +1,24 @@
-1. print²»»»ĞĞ
+1. printä¸æ¢è¡Œ
 ```
 from __future__ import print_function
 print('123123', end='')
 ```
-2.  ÍÆµ¼ÁĞ±í
-ÈçÏÂÁ½¶Î´úÂëµÈĞ§  
+2.  æ¨å¯¼åˆ—è¡¨
+å¦‚ä¸‹ä¸¤æ®µä»£ç ç­‰æ•ˆ  
 ```
-    #·½Ê½Ò»
+    #æ–¹å¼ä¸€
 	new_filelist=[]
 	for each_t in filelist:
 	    new_filelist.append(sanitize(each_t))
-    #·½Ê½¶ş
+    #æ–¹å¼äºŒ
 	new_filelist = [sanitize(each_t) for each_t in filelist]
 ```
-3. ÀàÊôĞÔ£º°Ñ·½·¨¿´³ÉÊôĞÔ£¬µ÷ÓÃÊ±Ò²ÀàËÆÓÚÊ¹ÓÃÊôĞÔ£¬ÀıÈç  
+3. ç±»å±æ€§ï¼šæŠŠæ–¹æ³•çœ‹æˆå±æ€§ï¼Œè°ƒç”¨æ—¶ä¹Ÿç±»ä¼¼äºä½¿ç”¨å±æ€§ï¼Œä¾‹å¦‚  
 ```
-# ¶¨Òå  
+# å®šä¹‰  
 @property
 def top3(self)
     ....
-# µ÷ÓÃ
+# è°ƒç”¨
      xxx.top3
 ```

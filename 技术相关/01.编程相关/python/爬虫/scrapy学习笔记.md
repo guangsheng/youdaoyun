@@ -1,41 +1,41 @@
-### ¼òµ¥Ê¹ÓÃ
-#### ´´½¨ÏîÄ¿
+### ç®€å•ä½¿ç”¨
+#### åˆ›å»ºé¡¹ç›®
 ```
 scrapy startproject pjoname
 
 cd pjoname
 scrapy generate example example.com
 ```
-#### ¼ì²éÏîÄ¿
+#### æ£€æŸ¥é¡¹ç›®
 ```scrapy list```
-#### Ö´ÐÐ×¥È¡
+#### æ‰§è¡ŒæŠ“å–
 ```scrapy crawl pjoname```
 
-#### Éú³É³öµÄÎÄ¼þ½éÉÜ
+#### ç”Ÿæˆå‡ºçš„æ–‡ä»¶ä»‹ç»
 ##### items.py
-- ¶¨ÒåÒª±£´æµÄÅÀÈ¡µ½µÄÐÅÏ¢£¬Ïàµ±ÓÚ´æ´¢ÅÀÈ¡µ½µÄÊý¾ÝµÄÈÝÆ÷¡£
-- ½á¹¹»¯µÄ
-- ÊµÀý»¯³öµÄÀà¶ÔÏóÊµ¼ÊÉÏÊÇÒ»¸ö×Öµä£¬keyÊÇ¶¨ÒåµÄ×Ö¶ÎÃû×Ö£¬valueÊÇÅÀÈ¡µ½µÄÖµ
+- å®šä¹‰è¦ä¿å­˜çš„çˆ¬å–åˆ°çš„ä¿¡æ¯ï¼Œç›¸å½“äºŽå­˜å‚¨çˆ¬å–åˆ°çš„æ•°æ®çš„å®¹å™¨ã€‚
+- ç»“æž„åŒ–çš„
+- å®žä¾‹åŒ–å‡ºçš„ç±»å¯¹è±¡å®žé™…ä¸Šæ˜¯ä¸€ä¸ªå­—å…¸ï¼Œkeyæ˜¯å®šä¹‰çš„å­—æ®µåå­—ï¼Œvalueæ˜¯çˆ¬å–åˆ°çš„å€¼
 
 ##### pipelines.py
-- ½ÓÊÕ´ÓÖ©Öë×é¼þÖÐÌáÈ¡³öµÄÏîÄ¿item£¬²¢×ö´¦Àí¡£
-- ¿ÉÒÔ¶ÔitemsÀï¶¨ÒåµÄÊý¾Ý½øÐÐ½øÒ»²½¼Ó¹¤´¦Àí£¬Ò²¾ÍÊÇÃ¿»ñÈ¡µ½Ò»ÌõÊý¾Ý¶¼»áµ÷ÓÃÒ»´Î¸ÃÎÄ¼þÖÐ¶¨ÒåµÄÖ¸¶¨º¯Êý
-- ³£¼ûµÄ´¦ÀíÖ÷ÒªÓÐ£ºÇåÏ´¡¢ÑéÖ¤¡¢´æ´¢µÈ
+- æŽ¥æ”¶ä»Žèœ˜è››ç»„ä»¶ä¸­æå–å‡ºçš„é¡¹ç›®itemï¼Œå¹¶åšå¤„ç†ã€‚
+- å¯ä»¥å¯¹itemsé‡Œå®šä¹‰çš„æ•°æ®è¿›è¡Œè¿›ä¸€æ­¥åŠ å·¥å¤„ç†ï¼Œä¹Ÿå°±æ˜¯æ¯èŽ·å–åˆ°ä¸€æ¡æ•°æ®éƒ½ä¼šè°ƒç”¨ä¸€æ¬¡è¯¥æ–‡ä»¶ä¸­å®šä¹‰çš„æŒ‡å®šå‡½æ•°
+- å¸¸è§çš„å¤„ç†ä¸»è¦æœ‰ï¼šæ¸…æ´—ã€éªŒè¯ã€å­˜å‚¨ç­‰
 
 ##### spiders/example.py
-- ÅÀ³æÎÄ¼þ
-- ¿ÉÒÔ´ÓÄ£°åÉú³É£¬ÊÇÅÀ³æÀà£¨Spider£©µÄ×ÓÀà¡£
-- ÅÀÈ¡Âß¼­¡¢Êý¾ÝÌáÈ¡Âß¼­µÈ¾ùÔÚÕâ¸öÎÄ¼þ¶¨Òå
-- Ö÷Òª¸ºÔðScrapyÒýÇæÖÐresponseÏìÓ¦£¬½ÓÊÕÁËresponseÏìÓ¦ºó£¬»á¶ÔÕâÐ©responseÏìÓ¦½øÐÐ·ÖÎö´¦Àí£¬È»ºóÌáÈ¡³ö¶ÔÓ¦µÄ¹Ø×¢µÄÊý¾Ý£¬Ò²¿ÉÒÔÌáÈ¡³ö½ÓÏÂÀ´ÐèÒª´¦ÀíµÄÐÂÍøÖ·µÈÐÅÏ¢¡£
+- çˆ¬è™«æ–‡ä»¶
+- å¯ä»¥ä»Žæ¨¡æ¿ç”Ÿæˆï¼Œæ˜¯çˆ¬è™«ç±»ï¼ˆSpiderï¼‰çš„å­ç±»ã€‚
+- çˆ¬å–é€»è¾‘ã€æ•°æ®æå–é€»è¾‘ç­‰å‡åœ¨è¿™ä¸ªæ–‡ä»¶å®šä¹‰
+- ä¸»è¦è´Ÿè´£Scrapyå¼•æ“Žä¸­responseå“åº”ï¼ŒæŽ¥æ”¶äº†responseå“åº”åŽï¼Œä¼šå¯¹è¿™äº›responseå“åº”è¿›è¡Œåˆ†æžå¤„ç†ï¼Œç„¶åŽæå–å‡ºå¯¹åº”çš„å…³æ³¨çš„æ•°æ®ï¼Œä¹Ÿå¯ä»¥æå–å‡ºæŽ¥ä¸‹æ¥éœ€è¦å¤„ç†çš„æ–°ç½‘å€ç­‰ä¿¡æ¯ã€‚
 
 ##### settings.py
 
-#### ÆäËûËµÃ÷
-- startproject ÃüÁî¿ÉÒÔÖ¸¶¨ÈÕÖ¾ÎÄ¼þ¡¢ÈÕÖ¾¼¶±ðµÈ
+#### å…¶ä»–è¯´æ˜Ž
+- startproject å‘½ä»¤å¯ä»¥æŒ‡å®šæ—¥å¿—æ–‡ä»¶ã€æ—¥å¿—çº§åˆ«ç­‰
 
-### scrapyÃüÁî½éÉÜ
+### scrapyå‘½ä»¤ä»‹ç»
 ```
-# ÏÔÊ¾ÅÀÈ¡¹ý³Ì¡¢ÔËÐÐÅÀ³æÎÄ¼þ¡¢²é¿´scrapyÅäÖÃÐÅÏ¢¡¢Ìá¹©½»»¥ÖÕ¶Ë¡¢ÐÔÄÜ²âÊÔ¡¢´´½¨ÅÀ³æÎÄ¼þ¡¢Æô¶¯ÅÀ³æ¡¢ºÏ·¨ÐÔ¼ì²éµÈ
+# æ˜¾ç¤ºçˆ¬å–è¿‡ç¨‹ã€è¿è¡Œçˆ¬è™«æ–‡ä»¶ã€æŸ¥çœ‹scrapyé…ç½®ä¿¡æ¯ã€æä¾›äº¤äº’ç»ˆç«¯ã€æ€§èƒ½æµ‹è¯•ã€åˆ›å»ºçˆ¬è™«æ–‡ä»¶ã€å¯åŠ¨çˆ¬è™«ã€åˆæ³•æ€§æ£€æŸ¥ç­‰
 [shiguangsheng@workstation lagou]$ scrapy -h
 Scrapy 1.4.0 - project: lagou
 

@@ -1,4 +1,4 @@
-#### 杂七杂八
+#### 鏉備竷鏉傚叓
 ```
 scrapy startproject myfirstpjt
 scrapy startproject --logfile="logf.log" mypjt1
@@ -35,7 +35,7 @@ Use "scrapy <command> -h" to see more info about a command
 
 ```
 
-#### 命令执行过程
+#### 鍛戒护鎵ц杩囩▼
 ```
 scrapy fetch http://www.baidu.com
 ```

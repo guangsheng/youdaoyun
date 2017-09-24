@@ -1,4 +1,4 @@
-### »ñÈ¡À­¹´ÍøÊı¾İ https://git.oschina.net/nanxun/lagou.git
+### è·å–æ‹‰å‹¾ç½‘æ•°æ® https://git.oschina.net/nanxun/lagou.git
 #### items.py
 ```
 # -*- coding: utf-8 -*-
@@ -179,7 +179,7 @@ ITEM_PIPELINES = {
 
 ```
 
-### ÏÂÔØ½£À´Ğ¡Ëµ
+### ä¸‹è½½å‰‘æ¥å°è¯´
 #### items.py
 ```
 # -*- coding: utf-8 -*-
