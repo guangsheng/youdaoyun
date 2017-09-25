@@ -1,12 +1,12 @@
-1. »ñÈ¡MySQL
+1. è·å–MySQL
 https://dev.mysql.com/downloads/mysql/5.7.html#downloads
 
-2. °²×°£¨dmg°²×°°ü£¬Í¼ĞÎ»¯°²×°½çÃæ£©  
+2. å®‰è£…ï¼ˆdmgå®‰è£…åŒ…ï¼Œå›¾å½¢åŒ–å®‰è£…ç•Œé¢ï¼‰  
 ```
 2017-03-14T03:50:55.753680Z 1 [Note] A temporary password is generated for root@localhost: wyS4&agCWp0k
 If you lose this password, please consult the section How to Reset the Root Password in the MySQL reference manual.
 ```
-3. ĞŞ¸Ä»·¾³±äÁ¿ºÍ³õÊ¼»¯  
+3. ä¿®æ”¹ç¯å¢ƒå˜é‡å’Œåˆå§‹åŒ–  
 ```
 bogon:bin shiguangsheng$ cat /Users/shiguangsheng/.bash_profile
 alias ll="ls -Al"
@@ -21,10 +21,10 @@ export MYSQLLIB=/usr/local/mysql/lib
 export PATH=$PATH:/Users/shiguangsheng/user_program/postgresql/bin:$MYSQLBIN
 ./mysqld --initalize
 ```
-4. Æô¶¯Í£Ö¹
+4. å¯åŠ¨åœæ­¢
 ```mysqld &```
 
-5. ĞŞ¸ÄÎª¼òµ¥ÃÜÂë huawei
+5. ä¿®æ”¹ä¸ºç®€å•å¯†ç  huawei
 ```
 bogon:~ shiguangsheng$ mysqladmin -uroot -p password
 Enter password:
@@ -32,7 +32,7 @@ New password:
 Confirm new password:
 Warning: Since password will be sent to server in plain text, use ssl connection to ensure password safety.
 ```
-### ³õÊ¼»¯¼ÇÂ¼
+### åˆå§‹åŒ–è®°å½•
 ```
 bogon:bin shiguangsheng$ ./mysqld --initalize
 2017-03-14T08:51:30.029777Z 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).

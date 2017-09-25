@@ -1,9 +1,9 @@
 1, UDT User defined Type
     ADT Abstract defined Type
-2, ��C++���ԣ�struct��class����"Ĭ�ϵس�Ա����Ȩ��"��һ�㲻ͬ�⣬û���κ����𡣼�ֻҪ����ȷ������ÿһ����Ա�ط���Ȩ�ޣ���ô��ȫ������structȡ��class��
-3�����struct��class�д��������Ա�����struct��class�����������ݸ�����ʱ��Ĭ��Ϊֵ���ݣ����е����齫ȫ��������������ջ�С�
-4��C++��C��֧����ͬ���Ͷ���֮���ֱ�Ӹ�ֵ����������֧�ִ�С�ȽϺ��еȡ�
-5��λ��
+2, 就C++而言，struct和class除了"默认地成员访问权限"这一点不同外，没有任何区别。即只要你明确地声明每一个成员地访问权限，那么完全可以用struct取代class。
+3，如果struct或class中存在数组成员，则把struct或class当作参数传递给函数时，默认为值传递，其中地数组将全部拷贝到函数堆栈中。
+4，C++和C都支持相同类型对象之间的直接赋值操作，但不支持大小比较和判等。
+5，位域
 struct DateTime
 {
     unsigned int year;
@@ -12,16 +12,16 @@ struct DateTime
     unsigned int day          :2
     unsigned int                 :0
 }
-C���Ե�λ���Ա������int��unsigned int��signed int�����͡�
-���Զ���Ǿ�����λ���Ա���������൱����ռλ����
-���Զ��峤��Ϊ0��λ���Ա������������ʹ��һ����Ա����һ�������Ļ����ֿ�ʼ����ռ䡣
-6���ֽ��Ǳ�ַ����С��λ������λ��
-7��struct �������
-1���κ�ʱ��Ӧ����sizeof()�����������һ��������Ĵ�С������Ҫ�Լ��²⡣
-2�����ڸ������͵Ķ������������ʼ��ַ�ܹ���������Ҫ�����ϸ���Ǹ����ݳ�Ա����Ȼ����Ҫ����ô��������Ȼ����ġ�
-3����ʡ�ռ�ķ��������մӴ�С��˳���ǰ������������ÿһ�����ݳ�Ա�����Ҿ���ʹ�ý�С�ĳ�Ա���뷽ʽ��
-4����λ�ȡ���⸴�������е�ÿ�����ݳ�Ա��ƫ���ֽ�����ʹ��offsetof�ꡣ�����ר�������������ݳ�Ա����ڶ�����ʼ��ַ����ʵƫ���������������������ԱҲ�����ȥ��
-5��
+C语言的位域成员必须是int、unsigned int、signed int等类型。
+可以定义非具名的位域成员，其作用相当于是占位符。
+可以定义长度为0的位域成员，其作用是迫使下一个成员从下一个完整的机器字开始分配空间。
+6，字节是编址的最小单位而不是位。
+7，struct 成语对齐
+1）任何时候都应该用sizeof()运算符来计算一个类或对象的大小，而不要自己猜测。
+2）对于复合类型的对象，如果它的起始地址能够满足其中要求最严格的那个数据成员的自然对齐要求，那么他就是自然对齐的。
+3）节省空间的方法：按照从大到小的顺序从前往后依次声明每一个数据成员，并且尽量使用较小的成员对齐方式。
+4）如何获取任意复合类型中的每个数据成员的偏移字节数：使用offsetof宏。这个宏专门用来计算数据成员相对于对象起始地址的真实偏移量。它会把所有隐含成员也计算进去。
+5）
 enum Color { Red,BLUE}
 struct Sedan
 {
@@ -31,7 +31,7 @@ struct Sedan
     double m_price;
     unsigned char m_seatNum;
 }
-���ռ��40���ֽڣ�m_seatNum���滹��Ҫ7���ֽڵ���䣬��Ϊ��Ҫ����Sedan��������Ķ���Ҫ��
+这个占用40个字节，m_seatNum后面还需要7个字节的填充，因为需要满足Sedan对象数组的对齐要求。
 struct Sedan
 {
     double m_price;
@@ -40,8 +40,8 @@ struct Sedan
     bool m_isAutoShift;
     unsigned char m_seatNum;
 }
-���ռ��16���ֽ�
-6��ʹ������ö������������о������ֵĳ���������һ�������⣬������ȡ���곣����const���ų�����
+这个占用16个字节
+6）使用匿名枚举来定义程序中经常出现的常量集合是一个好主意，他可以取代宏常量和const符号常量。
 
 
 

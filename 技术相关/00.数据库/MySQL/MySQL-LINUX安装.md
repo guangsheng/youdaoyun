@@ -1,14 +1,14 @@
-##### ²ÉÓÃ°²×°°ü·½Ê½°²×°
+##### é‡‡ç”¨å®‰è£…åŒ…æ–¹å¼å®‰è£…
 
-##### °²×°°æ±¾ÏÂÔØÂ·¾¶
+##### å®‰è£…ç‰ˆæœ¬ä¸‹è½½è·¯å¾„
 http://dev.mysql.com/downloads/mysql/5.7.html#downloads
 
-ĞèÒªÓÃoracleÕË»§ÏÂÔØ
+éœ€è¦ç”¨oracleè´¦æˆ·ä¸‹è½½
 
-×¢²áÓÊÏä
-enzesheng@foxmail.com  ÃÜÂëÍ¬ shiguangsheng@huawei.com
+æ³¨å†Œé‚®ç®±
+enzesheng@foxmail.com  å¯†ç åŒ shiguangsheng@huawei.com
 
-##### °²×°¹ı³Ì
+##### å®‰è£…è¿‡ç¨‹
 dpkg -i mysql-common_8.0.0-dmr-1ubuntu16.04_i386.deb
 dpkg -i libmysqlclient21_8.0.0-dmr-1ubuntu16.04_i386.deb
 dpkg -i libmysqlclient-dev_8.0.0-dmr-1ubuntu16.04_i386.deb
@@ -20,39 +20,39 @@ apt-get install libmecab2
 dpkg -i mysql-community-server_8.0.0-dmr-1ubuntu16.04_i386.deb
 dpkg -i mysql-server_8.0.0-dmr-1ubuntu16.04_i386.deb
 
-###### ÏÂÃæÕâ¼¸¸ö°üÃ»ÓĞ°²×°
+###### ä¸‹é¢è¿™å‡ ä¸ªåŒ…æ²¡æœ‰å®‰è£…
 mysql-community-source_8.0.0-dmr-1ubuntu16.04_i386.deb
 mysql-community-test_8.0.0-dmr-1ubuntu16.04_i386.deb
 mysql-testsuite_8.0.0-dmr-1ubuntu16.04_i386.deb
 
 
-##### ³õÊ¼»¯Êı¾İ¿â
-²ÎÊı²é¿´ mysqld --version --help
-Êı¾İÄ¿Â¼Ä¬ÈÏÎ»ÖÃ /var/lib/mysql
+##### åˆå§‹åŒ–æ•°æ®åº“
+å‚æ•°æŸ¥çœ‹ mysqld --version --help
+æ•°æ®ç›®å½•é»˜è®¤ä½ç½® /var/lib/mysql
 
-##### °²×°ºóÓÃ»§ÃÜÂëµÈĞÅÏ¢
+##### å®‰è£…åç”¨æˆ·å¯†ç ç­‰ä¿¡æ¯
 root huawei
 
-##### mysql½»»¥Ê½¿Í»§¶ËµÇÂ½·½Ê½
+##### mysqläº¤äº’å¼å®¢æˆ·ç«¯ç™»é™†æ–¹å¼
 mysql -uroot -p
 mysql -uroot -p -Dtest
 
-²é¿´µ±Ç°×´Ì¬ status
+æŸ¥çœ‹å½“å‰çŠ¶æ€ status
 
 
-##### Êı¾İ¿â¼¶±ğÏà¹Ø²Ù×÷
-´´½¨Êı¾İ¿â  create database test;
+##### æ•°æ®åº“çº§åˆ«ç›¸å…³æ“ä½œ
+åˆ›å»ºæ•°æ®åº“  create database test;
 
-²é¿´µ±Ç°Êı¾İ¿â  select database();
+æŸ¥çœ‹å½“å‰æ•°æ®åº“  select database();
 
-Á¬½Óµ½Ä³Ò»Êı¾İ¿â connect test
+è¿æ¥åˆ°æŸä¸€æ•°æ®åº“ connect test
 
 
-##### mysql¿Í»§µÄÖ±½Ó²éÑ¯ºó·µ»Ø
+##### mysqlå®¢æˆ·çš„ç›´æ¥æŸ¥è¯¢åè¿”å›
 mysql -uroot -phuawei -e"show databases"
 
-##### mysql¹Ø±ÕÍ£Ö¹  rootÓÃ»§ÏÂÖ´ĞĞ
+##### mysqlå…³é—­åœæ­¢  rootç”¨æˆ·ä¸‹æ‰§è¡Œ
 /etc/init.d/mysql start
 /etc/init.d/mysql stop
 
-/etc/init.d/mysql ÊÇ¸ö½Å±¾£¬À­ÆğµÄmysql½ø³ÌÊÇÔËĞĞÔÚmysqlÓÃ»§ÏÂµÄ
+/etc/init.d/mysql æ˜¯ä¸ªè„šæœ¬ï¼Œæ‹‰èµ·çš„mysqlè¿›ç¨‹æ˜¯è¿è¡Œåœ¨mysqlç”¨æˆ·ä¸‹çš„

@@ -1,11 +1,11 @@
-重庆大学镜像：http://b.mirrors.lanunion.org/CentOS/
-中国科学技术大学镜像：http://centos.ustc.edu.cn/centos/
-上海交通大学镜像：http://ftp.sjtu.edu.cn/centos/
-华中科技大学镜像：http://mirrors.hust.edu.cn/centos/
-北京理工大学镜像：http://mirror.bit.edu.cn/centos/
-西北农林科技大学镜像：http://mirrors.nwsuaf.edu.cn/centos/
-大连东软信息学院镜像：http://mirrors.neusoft.edu.cn/centos/
-网易镜像：http://mirrors.163.com/centos/
-清华大学镜像：https://mirrors.tuna.tsinghua.edu.cn/centos/
+閲嶅簡澶у闀滃儚锛歨ttp://b.mirrors.lanunion.org/CentOS/
+涓浗绉戝鎶�鏈ぇ瀛﹂暅鍍忥細http://centos.ustc.edu.cn/centos/
+涓婃捣浜ら�氬ぇ瀛﹂暅鍍忥細http://ftp.sjtu.edu.cn/centos/
+鍗庝腑绉戞妧澶у闀滃儚锛歨ttp://mirrors.hust.edu.cn/centos/
+鍖椾含鐞嗗伐澶у闀滃儚锛歨ttp://mirror.bit.edu.cn/centos/
+瑗垮寳鍐滄灄绉戞妧澶у闀滃儚锛歨ttp://mirrors.nwsuaf.edu.cn/centos/
+澶ц繛涓滆蒋淇℃伅瀛﹂櫌闀滃儚锛歨ttp://mirrors.neusoft.edu.cn/centos/
+缃戞槗闀滃儚锛歨ttp://mirrors.163.com/centos/
+娓呭崕澶у闀滃儚锛歨ttps://mirrors.tuna.tsinghua.edu.cn/centos/
 
-rpm包位置：http://mirrors.163.com/centos/7.3.1611/os/x86_64/Packages/
+rpm鍖呬綅缃細http://mirrors.163.com/centos/7.3.1611/os/x86_64/Packages/

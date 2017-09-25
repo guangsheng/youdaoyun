@@ -1,4 +1,4 @@
-1, Êý×é´óÐ¡¼ÆËã
+1, æ•°ç»„å¤§å°è®¡ç®—
 /*
  * lengthof
  *        Number of elements in an array.
@@ -6,7 +6,7 @@
 #define lengthof(array) (sizeof (array) / sizeof ((array)[0]))
 
 
-2£¬ Á´±íµÄ¼òµ¥ÊµÏÖ--Á´Í·ÔöÉ¾
+2ï¼Œ é“¾è¡¨çš„ç®€å•å®žçŽ°--é“¾å¤´å¢žåˆ 
     pending = (PendingRelDelete *)
         MemoryContextAlloc(TopMemoryContext, sizeof(PendingRelDelete));
     pending->isTemp = isTemp;

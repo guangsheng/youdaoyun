@@ -1,7 +1,7 @@
-使用root用户登录服务器，执行如下操作
+浣跨敤root鐢ㄦ埛鐧诲綍鏈嶅姟鍣紝鎵ц濡備笅鎿嶄綔
 ```bash
 tar -xzvf postgresql-9.1.5.tar.gz
-apt-get install zlib1g-dev bison flex ##ubuntu默认安装中不包含下面的软件，需要安装Bison,Flex,zlib
+apt-get install zlib1g-dev bison flex ##ubuntu榛樿瀹夎涓笉鍖呭惈涓嬮潰鐨勮蒋浠讹紝闇�瑕佸畨瑁匓ison,Flex,zlib
 cd /opt/
 mkdir postgresql
 cd /opt/pg_source/postgresql-9.1.5

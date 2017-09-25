@@ -1,4 +1,4 @@
-Í¨¹ýÉèÖÃ»·¾³±äÁ¿ ```export HISTTIMEFORMAT="%F %T `whoami` " ```¸øhistory¼ÓÉÏÊ±¼ä´Á  
+é€šè¿‡è®¾ç½®çŽ¯å¢ƒå˜é‡ ```export HISTTIMEFORMAT="%F %T `whoami` " ```ç»™historyåŠ ä¸Šæ—¶é—´æˆ³  
   
  ```
 [root@servyou_web ~]# export HISTTIMEFORMAT="%F %T `whoami` "  

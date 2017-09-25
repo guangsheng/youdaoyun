@@ -1,7 +1,7 @@
-Ã»ÓĞ¹Ø±Õ·À»ğÇ½
+æ²¡æœ‰å…³é—­é˜²ç«å¢™
 ```
-systemctl status firewalld #²é¿´·À»ğÇ½×´Ì¬
-systemctl stop firewalld #Í£Ö¹firewall
-systemctl disable firewalld #½ûÖ¹firewall¿ª»úÆô¶¯
+systemctl status firewalld #æŸ¥çœ‹é˜²ç«å¢™çŠ¶æ€
+systemctl stop firewalld #åœæ­¢firewall
+systemctl disable firewalld #ç¦æ­¢firewallå¼€æœºå¯åŠ¨
 ```
-ºóĞøÓĞÊ±¼äÔÚÑĞ¾¿ÈçºÎÔÚ²»¹Ø±Õ·À»ğÇ½µÄÇé¿öÏÂÊ¹ÆäÉúĞ§
+åç»­æœ‰æ—¶é—´åœ¨ç ”ç©¶å¦‚ä½•åœ¨ä¸å…³é—­é˜²ç«å¢™çš„æƒ…å†µä¸‹ä½¿å…¶ç”Ÿæ•ˆ

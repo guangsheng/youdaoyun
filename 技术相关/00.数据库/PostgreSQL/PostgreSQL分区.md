@@ -1,16 +1,16 @@
-1. ´´½¨Ö÷±í
-2. ´´½¨×Ó±í£¨¼Ì³Ğ×ÔÖ÷±í£¬ÒªÖ¸¶¨Ô¼ÊøºÍÖØĞÂ´´½¨Ë÷Òı¡¢Ö÷¼üµÈ£© ËµÃ÷£º¼Ì³Ğ²»»á¼Ì³ĞË÷Òı¡¢Ô¼Êø
-3. ´´½¨Ö÷±íµÄÔöÉ¾¸Ä´¥·¢Æ÷£¬½«ÏàÓ¦µÄÊı¾İ¸ÄÎª´¦Àí¶ÔÓ¦×Ó±í
+1. åˆ›å»ºä¸»è¡¨
+2. åˆ›å»ºå­è¡¨ï¼ˆç»§æ‰¿è‡ªä¸»è¡¨ï¼Œè¦æŒ‡å®šçº¦æŸå’Œé‡æ–°åˆ›å»ºç´¢å¼•ã€ä¸»é”®ç­‰ï¼‰ è¯´æ˜ï¼šç»§æ‰¿ä¸ä¼šç»§æ‰¿ç´¢å¼•ã€çº¦æŸ
+3. åˆ›å»ºä¸»è¡¨çš„å¢åˆ æ”¹è§¦å‘å™¨ï¼Œå°†ç›¸åº”çš„æ•°æ®æ”¹ä¸ºå¤„ç†å¯¹åº”å­è¡¨
 
 ```sql
---´´½¨±íºÍÔ¼Êø  
+--åˆ›å»ºè¡¨å’Œçº¦æŸ  
 create table person(id int primary key, name varchar(50), age int, sex int);
 create table men ( check(sex = 1)) inherits (person);
 create table women (check(sex = 0)) inherits (person);
 create unique index men_pk on men (id);
 create unique index women_pk on women (id);
 
---ÒÔINSERTÎªÀıËµÃ÷´´½¨´¥·¢Æ÷·½Ê½  
+--ä»¥INSERTä¸ºä¾‹è¯´æ˜åˆ›å»ºè§¦å‘å™¨æ–¹å¼  
 CREATE OR REPLACE FUNCTION person_insert_trigger()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -28,7 +28,7 @@ CREATE TRIGGER person_insert_trigger
 BEFORE INSERT ON person
 FOR EACH ROW EXECUTE PROCEDURE person_insert_trigger();
 
----²âÊÔ
+---æµ‹è¯•
 insert into person values(1,'limin',12,1);
 insert into person values(2,'hanmeimei',14,0);
 insert into person values(3,'zhuhuayin',15,1);

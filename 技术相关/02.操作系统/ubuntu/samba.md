@@ -1,23 +1,23 @@
-#### UbuntuÏÂÅäÖÃsambaÊµÏÖÎÄ¼ş¼Ğ¹²Ïí
-##### Ò». sambaµÄ°²×°:
+#### Ubuntuä¸‹é…ç½®sambaå®ç°æ–‡ä»¶å¤¹å…±äº«
+##### ä¸€. sambaçš„å®‰è£…:
 ```
 sudo apt-get install samba -y
 ```
-##### ¶ş. ´´½¨¹²ÏíÄ¿Â¼:
+##### äºŒ. åˆ›å»ºå…±äº«ç›®å½•:
 ```
 mkdir /home/phinecos/share
 sodu chmod 777 /home/phinecos/share
 ```
-##### Èı. ´´½¨SambaÅäÖÃÎÄ¼ş:
-1. ±£´æÏÖÓĞµÄÅäÖÃÎÄ¼ş
+##### ä¸‰. åˆ›å»ºSambaé…ç½®æ–‡ä»¶:
+1. ä¿å­˜ç°æœ‰çš„é…ç½®æ–‡ä»¶
 ```
 sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
 ```
-2. ĞŞ¸ÄÏÖÅäÖÃÎÄ¼ş
+2. ä¿®æ”¹ç°é…ç½®æ–‡ä»¶
 ```
 sudo gedit /etc/samba/smb.conf
 ```
-ÔÚsmb.conf×îºóÌí¼Ó
+åœ¨smb.confæœ€åæ·»åŠ 
 ```
 [share]
       path = /home/phinecos/share
@@ -26,22 +26,22 @@ sudo gedit /etc/samba/smb.conf
       public = yes
       writable = yes
 ```
-##### ËÄ. ´´½¨sambaÕÊ»§
+##### å››. åˆ›å»ºsambaå¸æˆ·
 ```
 sudo smbpasswd -a root
 ```
-È»ºó»áÒªÇóÄãÊäÈësambaÕÊ»§µÄÃÜÂë
+ç„¶åä¼šè¦æ±‚ä½ è¾“å…¥sambaå¸æˆ·çš„å¯†ç 
 
-Èç¹ûÃ»ÓĞµÚËÄ²½£¬µ±ÄãµÇÂ¼Ê±»áÌáÊ¾ session setup failed: NT_STATUS_LOGON_FAILURE£İ
+å¦‚æœæ²¡æœ‰ç¬¬å››æ­¥ï¼Œå½“ä½ ç™»å½•æ—¶ä¼šæç¤º session setup failed: NT_STATUS_LOGON_FAILUREï¼½
 
-##### Îå. ÖØÆôsamba·şÎñÆ÷
+##### äº”. é‡å¯sambaæœåŠ¡å™¨
 ```
 sudo /etc/init.d/samba restart
 ```
-##### Áù. ²âÊÔ
+##### å…­. æµ‹è¯•
 ```
 smbclient -L //localhost/share
 ```
-##### Æß. Ê¹ÓÃ
+##### ä¸ƒ. ä½¿ç”¨
 
-¿ÉÒÔµ½windowsÏÂÊäÈëipÊ¹ÓÃÁË£¬ÔÚÎÄ¼ş¼Ğ´¦ÊäÈë "\\" + "Ubuntu»úÆ÷µÄip»òÖ÷»úÃû" + "\\" + "share"
+å¯ä»¥åˆ°windowsä¸‹è¾“å…¥ipä½¿ç”¨äº†ï¼Œåœ¨æ–‡ä»¶å¤¹å¤„è¾“å…¥ "\\" + "Ubuntuæœºå™¨çš„ipæˆ–ä¸»æœºå" + "\\" + "share"

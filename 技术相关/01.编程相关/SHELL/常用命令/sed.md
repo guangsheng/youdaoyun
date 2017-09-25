@@ -1,2 +1,2 @@
-#### ×Ö·û´®Ìæ»»
+#### å­—ç¬¦ä¸²æ›¿æ¢
 ```sed -i 's/$DNS_DOMAIN/cluster.local./g' kubedns-controller.yaml```

@@ -1,4 +1,4 @@
-### ÓÃµ½µÄÀà¿â
+### ç”¨åˆ°çš„ç±»åº“
 ```
 log4j-1.2.17.jar
 postgresql-42.0.0.jar
@@ -8,20 +8,20 @@ oldlib/ibatis-2.3.4.726.jar
 oldlib/spring-2.5.5.jar
 oldlib/commons-dbcp-1.4.jar
 ```
-### ³ÌĞòÄ¿Â¼½á¹¹
+### ç¨‹åºç›®å½•ç»“æ„
 ```
 src
-©À©¤com
-©¦  ©¸©¤fisher
-©¦      ©À©¤bean
-©¦      ©À©¤dao
-©¦      ©À©¤idao
-©¦      ©¸©¤util
-©À©¤ibatis
-©¸©¤spring
+â”œâ”€com
+â”‚  â””â”€fisher
+â”‚      â”œâ”€bean
+â”‚      â”œâ”€dao
+â”‚      â”œâ”€idao
+â”‚      â””â”€util
+â”œâ”€ibatis
+â””â”€spring
 ```
 
-### Êı¾İ¿â±í½á¹¹
+### æ•°æ®åº“è¡¨ç»“æ„
 ```SQL
 create database test;
 create user test superuser;
@@ -32,8 +32,8 @@ create table course(id int, coures_name varchar);
 
 ```
 
-### Ïà¹Ø´úÂë
-####applicationContext.xml springÅäÖÃÎÄ¼ş
+### ç›¸å…³ä»£ç 
+####applicationContext.xml springé…ç½®æ–‡ä»¶
 ```XML
 <?xml version="1.0" encoding="UTF-8"?>  
 <beans  
@@ -49,7 +49,7 @@ create table course(id int, coures_name varchar);
 </bean>
   
 <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">  
-  <!-- ´Ë´¦Ó¦×¢ÈëibatisÅäÖÃÎÄ¼ş£¬¶ø·ÇsqlMapÎÄ¼ş£¬·ñÔò»á³öÏÖ¡°there is no statement.....Òì³£¡± -->  
+  <!-- æ­¤å¤„åº”æ³¨å…¥ibatisé…ç½®æ–‡ä»¶ï¼Œè€ŒésqlMapæ–‡ä»¶ï¼Œå¦åˆ™ä¼šå‡ºç°â€œthere is no statement.....å¼‚å¸¸â€ -->  
   <property name="configLocation"><value>ibatis/sqlMapConfig.xml</value></property>  
 </bean>  
   
@@ -61,7 +61,7 @@ create table course(id int, coures_name varchar);
 </beans>  
 ```
 
-#### sqlMapConfig.xml IBATIS×ÜµÄÅäÖÃÎÄ¼ş
+#### sqlMapConfig.xml IBATISæ€»çš„é…ç½®æ–‡ä»¶
 ```XML
 <?xml version="1.0" encoding="UTF-8"?>   
 <!DOCTYPE sqlMapConfig
@@ -73,7 +73,7 @@ create table course(id int, coures_name varchar);
 </sqlMapConfig>  
 ```
 
-#### ibatis.xml IBATISÏêÏ¸ÅäÖÃÎÄ¼ş£¬ÓÃÓÚÅäÖÃSQL
+#### ibatis.xml IBATISè¯¦ç»†é…ç½®æ–‡ä»¶ï¼Œç”¨äºé…ç½®SQL
 ```XML
 <?xml version="1.0" encoding="UTF-8" ?>  
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >  
@@ -145,7 +145,7 @@ public class CourseBean {
 }
 
 ```
-#### ½Ó¿Ú
+#### æ¥å£
 ```java
 package com.fisher.idao;
 
@@ -169,7 +169,7 @@ public interface ICourseDAO {
 }
 
 ```
-#### ¹¤¾ßÀà
+#### å·¥å…·ç±»
 ```java
 package com.fisher.util;
 
@@ -213,7 +213,7 @@ public class BaseDAOImpl extends SqlMapClientDaoSupport{
 }
 
 ```
-#### ½Ó¿ÚÊµÏÖ
+#### æ¥å£å®ç°
 ```java
 package com.fisher.dao;
 
@@ -277,7 +277,7 @@ public class CourseDAOImpl extends BaseDAOImpl implements ICourseDAO{
 }
 
 ```
-#### ²âÊÔ³ÌĞò
+#### æµ‹è¯•ç¨‹åº
 ```java
 package com.fisher;
 
@@ -313,7 +313,7 @@ public class TestMain {
 	}
 	
 	public static void main(String[] args) {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//ÉèÖÃÈÕÆÚ¸ñÊ½
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//è®¾ç½®æ—¥æœŸæ ¼å¼
 		ApplicationContext context=new ClassPathXmlApplicationContext("spring/applicationContext.xml");  
         CourseDAOImpl courseDAO = (CourseDAOImpl)context.getBean("CourseDAO");
         

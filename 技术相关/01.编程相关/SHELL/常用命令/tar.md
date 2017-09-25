@@ -1,4 +1,4 @@
-- ·Ö°üÑ¹ËõºÍ½âÑ¹
+- åˆ†åŒ…å‹ç¼©å’Œè§£å‹
 ```bash
 tar czf - test.pdf | split -b 500 - test.tar.gz
 cat logs.tar.bz2.a* | tar xj

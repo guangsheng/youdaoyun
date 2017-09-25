@@ -1,4 +1,4 @@
-##### GitHubÊÇÔÚÍøÂçÉÏÌá¹©Git²Ö¿âµÄÒ»Ïî·şÎñ¡£
+##### GitHubæ˜¯åœ¨ç½‘ç»œä¸Šæä¾›Gitä»“åº“çš„ä¸€é¡¹æœåŠ¡ã€‚
 
-##### ÉèÖÃSSH KEY
+##### è®¾ç½®SSH KEY
 ssh-keygen -t rsa -C "enzesheng@foxmai.com"
