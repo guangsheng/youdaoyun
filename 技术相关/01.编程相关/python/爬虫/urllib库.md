@@ -1,5 +1,6 @@
 #### python2和python3的区别
 **python2是两个库，urllib和urllib2，python3中将urllib2合并到了urllib**
+
 python2|python3
 -------|-------
 import urllib2|import urllib.request, urllib.error
