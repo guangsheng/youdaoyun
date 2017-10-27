@@ -25,3 +25,9 @@ s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可
 ```
 #### 字符串替换
 ```sed -i 's/$DNS_DOMAIN/cluster.local./g' kubedns-controller.yaml```
+
+#### 例子：将```= 'wwskcd', 0 = 'wwskcc', 1 = 'wwskcj'```修改为```'wwskcd', 'wwskcc', 'wwskcj'```
+```
+先将字符串写入到 oldstr.log 中，然后执行
+sed 's/[0-9]*[ ]*=[ ]*//g' oldstr.log
+```
