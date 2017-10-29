@@ -1,5 +1,5 @@
-°²×°brew
-brew µÄ¹Ù·½ÍøÕ¾£º http://brew.sh/   ÔÚ¹Ù·½ÍøÕ¾¶ÔbrewµÄÓÃ·¨½øĞĞÁËÏêÏ¸µÄÃèÊö
-°²×°·½·¨£º  ÔÚMacÖĞ´ò¿ªTermal:  ÊäÈëÃüÁî£º
+å®‰è£…brew
+brew çš„å®˜æ–¹ç½‘ç«™ï¼š http://brew.sh/   åœ¨å®˜æ–¹ç½‘ç«™å¯¹brewçš„ç”¨æ³•è¿›è¡Œäº†è¯¦ç»†çš„æè¿°
+å®‰è£…æ–¹æ³•ï¼š  åœ¨Macä¸­æ‰“å¼€Termal:  è¾“å…¥å‘½ä»¤ï¼š
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
