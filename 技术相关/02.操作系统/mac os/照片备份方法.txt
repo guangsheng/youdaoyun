@@ -1,4 +1,4 @@
-########Ò»ÌõÃüÁî  awk
+########ä¸€æ¡å‘½ä»¤  awk
 for file in `ls -lR 01 |grep rw |grep -v '^d' | awk -F" " '{print $9}'`
 do
     echo "test: mv $file 01_backup/"
@@ -6,7 +6,7 @@ do
 done
 
 
-### ĞèÒªÌæ»»Ä¿Â¼Ãû³Æ  01 ÒÔ¼° 01_backup
+### éœ€è¦æ›¿æ¢ç›®å½•åç§°  01 ä»¥åŠ 01_backup
 for file in `find 01 -iname "*.PNG"`
 do
     echo "test: mv $file 01_backup/"
