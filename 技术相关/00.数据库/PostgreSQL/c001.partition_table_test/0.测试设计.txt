@@ -1,0 +1,27 @@
+1. 创建四个数据库,模式都用public，用户都用postgres，表空间在同一个分区下
+partition_year
+partition_month
+partition_week
+partition_day
+
+2. 基础数据，数据各分区要尽量平分，总记录数都是一亿条
+
+3. 测试插入、更新、删除、查询性能，均使用pgbench工具
+
+每个pg_bench测试中
+循环插入、更新、删除或查询10000条记录
+
+对比
+
+
+###测试记录
+分区个数,记录数,空间占用
+
+
+分区个数,插入耗时,更新耗时,查询耗时,删除耗时
+
+
+
+####
+\setrandom id 1 10000
+insert into maintb values(:id,'abcd12345');

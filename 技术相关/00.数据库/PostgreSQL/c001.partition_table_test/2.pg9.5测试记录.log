@@ -1,0 +1,56 @@
+###测试记录 (PostgreSQL) 9.5.5
+分区个数,记录数,空间占用
+分区个数,插入耗时,更新耗时,查询耗时,删除耗时
+
+
+
+#### 前174960行记录
+insert into t_part_test(guid, point_time, data_type, point_type, lng, lat, point_num, geo_hash, point_count) select nextval('seq_sgs_test_1')::varchar, generate_series('2017-01-01'::timestamp, '2018-12-30 23:59:59'::timestamp, '6 min'), 'open_lock_data', 'M_1', 112.2237318, 30.3281193, 1, 2, 3;
+
+分区个数,插入耗时(ms)
+year, 3428.879
+month, 3484.155
+week, 28302.490
+day, 28994.470
+
+
+#### 准备基础数据 550*174960=96228000
+分区个数,插入耗时(s)
+year, 2249
+month, 3256
+week, 3376
+day, 3506
+
+#### 插入+查询+更新+删除 10万次（对同一张表操作，表数据量不一致）
+分区个数,表记录,耗时(s)
+year, 96402960, 413 
+month,3727440, 957
+week, 927360, 4207
+day, 132240, 超过61200秒
+
+#### 插入+查询+更新+删除 5000次（对同一张表操作，表数据量不一致，限制查询时间）
+分区个数,表记录,耗时(s)
+year, 96402960,  20
+month,3727440, 41
+week, 927360, 154
+day, 132240, 3054
+
+
+#### 查询 5000次
+准备：insert into t_part_test(guid, point_time, data_type, point_type, lng, lat, point_num, geo_hash, point_count) select 'abcdefg', now(), 'open_lock_data', 'M_1', 112.2237318, 30.3281193, 1, 2, 3;
+
+select * from t_part_test where guid='abcdefg' and point_time >= '2017-11-01'::timestamp and point_time <= '2017-11-02'::timestamp;
+
+分区个数,表记录,耗时(s)
+year, 96402960, 2
+month,3727440, 6
+week, 927360, 20
+day, 132240, 305
+
+#### 插入 5000次
+insert into t_part_test(guid, point_time, data_type, point_type, lng, lat, point_num, geo_hash, point_count) select nextval('seq_sgs_test_1')::varchar, now(), 'open_lock_data', 'M_1', 112.2237318, 30.3281193, 1, 2, 3;
+
+year, 96402960, 7
+month,3727440, 8
+week, 927360, 7
+day, 132240, 8

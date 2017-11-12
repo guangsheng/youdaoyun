@@ -1,0 +1,27 @@
+[2017-11-02-19-31-20] begin
+[2017-11-02-19-31-20] end
+[2017-11-02-19-32-19] begin
+NOTICE:  2017-11-02 19:32:19.575803
+ 
+
+[2017-11-02-19-32-19] end
+[2017-11-02-19-35-04] begin
+NOTICE:  2017-11-02 19:35:04.82185
+ERROR:  function __rds_pg_stats__.snap_delete(timestamp with time zone) does not exist
+LINE 1: ..._stats__.snap_database(false);             select __rds_pg_s...
+                                                             ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+[2017-11-02-19-35-04] end
+[2017-11-02-19-38-00] begin
+NOTICE:  2017-11-02 19:38:00.872168
+
+[2017-11-02-19-38-01] end
+[2017-11-02-20-21-37] begin
+psql: could not connect to server: Operation timed out
+	Is the server running on host "10.47.49.170" and accepting
+	TCP/IP connections on port 3434?
+[2017-11-02-20-22-56] end
+[2017-11-02-20-24-09] begin
+NOTICE:  2017-11-02 20:24:09.070907
+
+[2017-11-02-20-24-09] end

@@ -1,0 +1,5 @@
+- 查找已安装: ```rpm -qa```
+- 查看rpm文件内容: ```rpm -qpl packetname```
+- 导出包里的内容，而不是安装：```rpm2cpio pkgname | cpio -ivd```
+- 查看文件属于哪个包： ```rpm -qf /path/filename```
+- 检查依赖关系；并真正的安装：```rpm -ivh --test ```

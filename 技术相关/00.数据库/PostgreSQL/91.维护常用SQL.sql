@@ -18,6 +18,9 @@
 17. 获取各模式占用磁盘大小
 18. 查看指定表IO信息
 19. PostgreSQL去重
+20. 导出指定表的表结构
+21. 查看分区表约束信息
+22. 查询分区表信息
 **/
 
 --1. 修改表的autovacuum参数
@@ -256,7 +259,7 @@ select ctid, * from emp where ctid in (select min(ctid) from emp group by id);
 delete from emp where ctid not in (select min(ctid) from emp group by id); 
 
 --20. 导出指定表的表结构
-
+```pg_dump bikeoss -p 3434 --schema-only --encoding='UTF8' --table='bikeoss.t_bike_alert*' > t_bike_alert.sql ```
 --21. 查看分区表约束信息
 select relname "child table", consrc "check"
   from pg_inherits i
@@ -265,3 +268,31 @@ select relname "child table", consrc "check"
  where contype = 'c'
    and inhparent = 't_ride_info'::regclass
  order by relname asc;
+
+--22. 查询分区表信息
+select relname "child table", consrc "check"
+  from pg_inherits i
+       join pg_class c on c.oid = inhrelid
+       join pg_constraint on c.oid = conrelid
+ where contype = 'c'
+   and inhparent = 't_bike_point_data'::regclass
+ order by relname asc;
+
+
+------
+select snap_ts, size, (size - lead(size) over(order by snap_ts desc)) as difference
+  from 
+    (
+      select snap_ts, sum(size) as size
+        from (
+      select snap_id, snap_ts, datname, pg_size_pretty,
+               case when pg_size_pretty ilike '%GB%' then to_number(pg_size_pretty, '9999999')*1024
+                  when pg_size_pretty ilike '%MB%' then to_number(pg_size_pretty, '9999999')
+                  when pg_size_pretty ilike '%KB%' then round(to_number(pg_size_pretty, '9999999')/1024)
+                  else 0
+               end as size
+        from snap_pg_db_size) a
+       group by snap_ts
+       order by snap_ts desc
+    ) t;
+

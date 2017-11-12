@@ -1,0 +1,1 @@
+ssh -o NumberOfPasswordPrompts=0 -o StrictHostKeyChecking=no  deploy@10.111.50.227   "date"
