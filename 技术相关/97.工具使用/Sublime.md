@@ -29,7 +29,7 @@ Preference
 ]
 ```
 
-###### user
+##### user
 ```
 {
 	"color_scheme": "Packages/Color Scheme - Default/Solarized (Light).tmTheme",
@@ -43,3 +43,8 @@ Preference
 	]
 }
 ```
+
+##### dash
+[
+	{ "keys": ["super+k"], "command": "dash_doc"}
+]

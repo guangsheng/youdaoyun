@@ -1,0 +1,104 @@
+- 发布订阅模式实现
+- 可以保证事务性
+- 同样需要初始化，而不是会自动检查加载
+- 支持级联复制，支持一主多从
+- 最小粒度为表
+- 基础也是流复制
+- 发布端发布相关的表，订阅端选择订阅的表并提供connection信息用于连接到主库
+- 每个订阅都会占用一个replication slot
+- 发布和订阅的表名要相同，但是所属模式和用户没有要求。另外，列名、列类型要相同，但是列的顺序可以不同，且目标表的列可以比源表列多
+- To create a subscription, the user must be a superuser.
+- The subscription apply process will run in the local database with the privileges of a superuser.
+- A conflict will produce an error and will stop the replication; it must be resolved manually by the user. Details about the conflict can be found in the subscriber's server log.
+
+#### 参数设置
+- ```wal_level``` ： publish端必须是logical
+- ```max_replication_slots``` : publish端设置的槽位一定要多于subscriber
+- ```max_logical_replication_workers```
+- ```max_worker_processes```
+
+#### 约束（也可以理解为当前还不支持的功能）
+- The database schema and DDL commands are not replicated     ?? CREATE TABLE XX AS SELECT 以及 COPY命令是否支持
+- Sequence data is not replicated. 
+- TRUNCATE commands are not replicated.
+- Large objects are not replicated.
+- Replication is only possible from base tables to base tables（不支持视图、物化视图、分区根表、外部表等）
+
+#### 一些细节
+- 发布者如何记录哪些数据要新增的，哪些数据是删除的，哪些数据要更新？ 
+    - 通过replica identity。replica identity可以是主键，也可以是唯一索引，或者full（全部列）
+- 如何保证中间不中断的？
+- 如果订阅者是可写的，那么冲突时可能发生的，如何处理冲突？
+    - 冲突发生，复制终止。
+    - 终止后需要用户处理后恢复复制。
+    - 恢复复制方法： ALTER SUBSCRIPTION ... ENABLE
+    - 冲突数据如何处理：删除或跳过(```pg_replication_origin_advance()```)
+- 初始化时如何完成的？
+    - The initial data in existing subscribed tables are snapshotted and copied in a parallel instance of a special kind of apply process. This process will create its own temporary replication slot and copy the existing data. Once existing data is copied, the worker enters synchronization mode, which ensures that the table is brought up to a synchronized state with the main apply process by streaming any changes that happened during the initial data copy using standard logical replication. Once the synchronization is done, the control of the replication of the table is given back to the main apply process where the replication continues as normal.
+
+
+#### 几个命令
+- CREATE PUBLICATION 
+	- https://www.postgresql.org/docs/10/static/sql-createpublication.html
+- CREATE SUBSCRIPTION
+	- https://www.postgresql.org/docs/10/static/sql-createsubscription.html
+
+#### monitor相关系统函数和视图
+- ```pg_stat_subscription```
+- ```pg_stat_replication```
+- ```pg_is_in_recovery```
+- ```pg_current_wal_lsn```
+- ```pg_last_wal_receive_lsn```
+- ```pg_last_wal_replay_lsn```
+- ```pg_last_xact_replay_timestamp```
+- ```pg_publication_tables```
+- ```pg_publication```
+- ```pg_subscription```
+- ```pg_subscription_rel```
+
+#### 测试
+```
+--1. pub/sub数据库参数设置
+archive_command = on
+archive_command = 'cd ./'
+wal_level = logical
+max_replication_slots = 32
+max_logical_replication_workers = 32
+max_worker_processes = 32
+
+TMPDATA=XX
+bash /dbdir/pg_custom_tool/hellobike_pgfuncs.sh -b setconfig -D ${TMPDATA} -t 0 -p wal_level -v "logical"
+bash /dbdir/pg_custom_tool/hellobike_pgfuncs.sh -b setconfig -D ${TMPDATA} -t 0 -p max_replication_slots -v "32"
+bash /dbdir/pg_custom_tool/hellobike_pgfuncs.sh -b setconfig -D ${TMPDATA} -t 0 -p max_logical_replication_workers -v "32"
+bash /dbdir/pg_custom_tool/hellobike_pgfuncs.sh -b setconfig -D ${TMPDATA} -t 0 -p max_worker_processes -v "32"
+bash /dbdir/pg_custom_tool/hellobike_pgfuncs.sh -b setconfig -D ${TMPDATA} -t 0 -p archive_mode -v "on"
+bash /dbdir/pg_custom_tool/hellobike_pgfuncs.sh -b setconfig -D ${TMPDATA} -t 1 -p archive_command -v "cd .\/"
+
+--2. pub创建用户并配置pg_hba.conf
+---create user
+CREATE USER repuser replication LOGIN CONNECTION LIMIT 32 ENCRYPTED PASSWORD 'repuser';
+---pg_hba.conf
+host    all     repuser       10.111.50.227/32       md5
+
+--3. 创建测试表、测试基础数据、并授权
+create table test_logical(id int , create_time timestamp);
+grant all on test_logical to repuser;
+alter table test_logical add primary key(id);
+create sequence seq_test_logical_id start 1;
+insert into test_logical(id, create_time) select nextval('seq_test_logical_id'), generate_series('2017-11-13'::timestamp, '2017-11-15'::timestamp, '1 min');
+
+--4. pub 发布(可以一次性发布多个表)
+CREATE PUBLICATION pub_test_logical FOR TABLE test_logical;
+---查看
+select * from pg_publication_tables;
+
+--5. sub 订阅
+create table test_logical(id int , create_time timestamp);  
+CREATE SUBSCRIPTION sub_test_logical CONNECTION 'dbname=postgres host=10.111.50.227 port=5434 user=repuser password=repuser' PUBLICATION pub_test_logical;
+
+--6. 检查
+select count(1) from test_logical;
+
+--7. 查看复制槽位
+select * from pg_stat_replication;
+```

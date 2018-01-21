@@ -69,3 +69,10 @@ do
     curl -k -s http://www.eztang.cn${info} > $filename
 done
 ```
+
+##### 5.计算
+```
+cat redis_redis8389.dump.rdb.201712261040.csv.log |grep COPY |grep -v CONTEXT |awk -F' ' '{ sum += $2 } END { print sum }'
+ls s07_s06_s05_s04_s03_s02_* |xargs cat > err.log
+awk -F',' '{if(NF>=4)sum += $(NF-3)} END { print sum }' err.log
+```

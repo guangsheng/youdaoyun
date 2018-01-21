@@ -1,52 +1,58 @@
 /**
-1. 修改表的autovacuum参数
-2. 重建主键索引
-3. 查询指定进程当前执行的sql
-4. 查询某个表的更新次数、活动记录、死记录和大小等信息
-5. 获取当前xlog位置
-6. 查询当前还在执行的执行时间最长的SQL
-7. 查询索引膨胀情况
-8. 查询表膨胀情况
-9. 查询checkpoint信息
-10. 查询当前某个配置参数的实际配置情况
-11. 查看数据库信息
-12. 获取数据库启动时间
-13. 显示那些当前准备好进行两阶段提交的事务的信息
-14. 显示所有当前会话中可用的预备语句
-15. 查询表空间信息
-16. 获取各表空间占用磁盘大小
-17. 获取各模式占用磁盘大小
-18. 查看指定表IO信息
-19. PostgreSQL去重
-20. 导出指定表的表结构
-21. 查看分区表约束信息
-22. 查询分区表信息
+   1. 修改表的autovacuum参数
+   2. 重建主键索引
+   3. 查询指定进程当前执行的sql
+   4. 查询某个表的更新次数、活动记录、死记录和大小等信息
+   5. 获取当前xlog位置
+   6. 查询当前还在执行的执行时间最长的SQL
+   7. 查询索引膨胀情况
+   8. 查询表膨胀情况
+   9. 查询checkpoint信息
+   10. 查询当前某个配置参数的实际配置情况
+   11. 查看数据库信息
+   12. 获取数据库启动时间
+   13. 显示那些当前准备好进行两阶段提交的事务的信息
+   14. 显示所有当前会话中可用的预备语句
+   15. 查询表空间信息
+   16. 获取各表空间占用磁盘大小
+   17. 获取各模式占用磁盘大小
+   18. 查看指定表IO信息
+   19. PostgreSQL去重
+   20. 导出指定表的表结构
+   21. 查看分区表约束信息
+   22. 时间转换
+   23. GB,MB等转数字
+   24. 查询各应用使用的连接数
+   25. copy命令使用
+   26. 授权相关
+   27. 查询结果分隔符修改
+   28. 列定义
 **/
 
---1. 修改表的autovacuum参数
+---1. 修改表的autovacuum参数
 alter table t_bike_alert_live SET (autovacuum_vacuum_cost_delay=10, autovacuum_vacuum_cost_limit=10000, autovacuum_vacuum_scale_factor=0.02, autovacuum_analyze_scale_factor=0.02, 
 toast.autovacuum_vacuum_cost_delay=10, toast.autovacuum_vacuum_scale_factor=0.05);
 --确认修改情况
 select relname, reloptions from pg_class where relname in ('t_bike_alert_20171020', 't_bike_alert_live');
 
---2. 重建主键索引
+---2. 重建主键索引
 CREATE UNIQUE INDEX CONCURRENTLY t_bike_alert_live_pkey_new ON t_bike_alert_live(guid);
 ALTER TABLE t_bike_alert_live DROP CONSTRAINT t_bike_alert_live_pkey;
 ALTER TABLE t_bike_alert_live ADD CONSTRAINT t_bike_alert_live_pkey_new PRIMARY KEY USING INDEX t_bike_alert_live_pkey_new;
 alter index t_bike_alert_live_pkey_new RENAME to t_bike_alert_live_pkey;
 
---3. 查询指定进程当前执行的sql
+---3. 查询指定进程当前执行的sql
 select query , query_start, now() from pg_stat_activity where pid = 1931;
 
---4. 查询某个表的更新次数、活动记录、死记录和大小等信息
+---4. 查询某个表的更新次数、活动记录、死记录和大小等信息
 select now(), relname, n_tup_ins, n_tup_upd, n_tup_del, n_live_tup, n_dead_tup from pg_stat_all_tables where relname = 't_bike_alert_live';
 select now(), relname, relpages, reltuples, relpages/128 as size from pg_class 
  where relname in ('t_bike_alert_live','t_bike_alert_live_pkey','idx_bal_bike_no','idx_bike_alert_live_cityid');
 
---5. 获取当前xlog位置
+---5. 获取当前xlog位置
 select now(), pg_current_xlog_location();
 
---6. 查询当前还在执行的执行时间最长的SQL
+---6. 查询当前还在执行的执行时间最长的SQL
   SELECT now(), query, query_start,
          EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM query_start) AS duration 
     FROM pg_stat_activity 
@@ -56,7 +62,7 @@ select now(), pg_current_xlog_location();
    ORDER BY duration DESC 
    LIMIT 1;
 
---7. 查询索引膨胀情况
+---7. 查询索引膨胀情况
 SELECT tblname, idxname, bs*(relpages)::bigint AS real_size,
   bs*(relpages-est_pages)::bigint AS extra_size,
   100 * (relpages-est_pages)::float / relpages AS extra_ratio,
@@ -188,14 +194,14 @@ FROM (
  WHERE NOT is_na and schemaname='bikeoss'
  ORDER BY bloat_ratio DESC;
  
---9. 查询checkpoint信息
+---9. 查询checkpoint信息
 select * from pg_stat_bgwriter;
 SELECT EXTRACT(EPOCH FROM NOW() - stats_reset) from pg_stat_bgwriter;
 
---10. 查询当前某个配置参数的实际配置情况
+---10. 查询当前某个配置参数的实际配置情况
 select current_setting('max_connections');
 
---11. 查看数据库信息
+---11. 查看数据库信息
 SELECT 
     d.oid as oid, 
     d.datname as path, 
@@ -215,16 +221,16 @@ WHERE
     AND d.datistemplate = 'n' 
 ORDER BY 1;
 
---12. 获取数据库启动时间
+---12. 获取数据库启动时间
 SELECT pg_postmaster_start_time();
 
 
---13. 显示那些当前准备好进行两阶段提交的事务的信息
+---13. 显示那些当前准备好进行两阶段提交的事务的信息
 select * from pg_prepared_xacts;
---14. 显示所有当前会话中可用的预备语句
+---14. 显示所有当前会话中可用的预备语句
 select * from pg_prepared_statements;
 
---15. 查询表空间信息
+---15. 查询表空间信息
 SELECT  
   n.oid AS oid, 
   current_database() || '.' || n.nspname AS path, 
@@ -239,28 +245,29 @@ WHERE
   AND n.nspname <> 'information_schema' 
 ORDER BY namespace;
 
---16. 获取各表空间占用磁盘大小
+---16. 获取各表空间占用磁盘大小
 SELECT 
   SUM(pg_relation_size(quote_ident(schemaname) || '.' || quote_ident(tablename))::bigint)/1024/1024 as size, tablespace
   FROM pg_tables 
  GROUP by tablespace;
 
---17. 获取各模式占用磁盘大小
+---17. 获取各模式占用磁盘大小
 SELECT 
   SUM(pg_relation_size(quote_ident(schemaname) || '.' || quote_ident(tablename))::bigint)/1024/1024 as size, schemaname
   FROM pg_tables 
  GROUP by schemaname;
  
---18. 查看指定表IO信息
+---18. 查看指定表IO信息
 select * from pg_statio_all_tables where relname = 'men';
 
---19. PostgreSQL去重
+---19. PostgreSQL去重
 select ctid, * from emp where ctid in (select min(ctid) from emp group by id); 
 delete from emp where ctid not in (select min(ctid) from emp group by id); 
 
---20. 导出指定表的表结构
+---20. 导出指定表的表结构
 ```pg_dump bikeoss -p 3434 --schema-only --encoding='UTF8' --table='bikeoss.t_bike_alert*' > t_bike_alert.sql ```
---21. 查看分区表约束信息
+
+---21. 查看分区表约束信息
 select relname "child table", consrc "check"
   from pg_inherits i
        join pg_class c on c.oid = inhrelid
@@ -269,17 +276,10 @@ select relname "child table", consrc "check"
    and inhparent = 't_ride_info'::regclass
  order by relname asc;
 
---22. 查询分区表信息
-select relname "child table", consrc "check"
-  from pg_inherits i
-       join pg_class c on c.oid = inhrelid
-       join pg_constraint on c.oid = conrelid
- where contype = 'c'
-   and inhparent = 't_bike_point_data'::regclass
- order by relname asc;
+---22. 时间转换
+select to_char(snap_ts,'YYYY-MM-DD HH24:MI:SS')
 
-
-------
+---23. GB,MB等转数字
 select snap_ts, size, (size - lead(size) over(order by snap_ts desc)) as difference
   from 
     (
@@ -296,3 +296,60 @@ select snap_ts, size, (size - lead(size) over(order by snap_ts desc)) as differe
        order by snap_ts desc
     ) t;
 
+---24. 查询各应用使用的连接数
+select client_addr, application_name, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by client_addr,application_name order by 3;
+select application_name, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name order by 1;
+select application_name, datname, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, datname order by 2;
+---25. copy命令使用
+COPY ( 
+select bike_no,produce_time, bom_guid,bom_name 
+  from t_bike_info t
+ where exists (select 'x' from test_bike_no where bike_no = t.bike_no)
+ )
+ to '/var/tmp/sgs/bike_info.csv' with csv;
+
+---26. 授权相关
+grant select on all tables in schema  bike to viewflowadmin  WITH GRANT OPTION;
+grant select on all tables in schema  bike_order to viewflowadmin  WITH GRANT OPTION;
+grant select on all tables in schema  power_bike to viewflowadmin  WITH GRANT OPTION;
+
+GRANT ALL ON TABLE t_coupon_group TO bike_market;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE t_coupon_group TO bike_market_rw;
+GRANT SELECT ON TABLE t_coupon_group TO bike_market_ro;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA bike GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+ALTER DEFAULT PRIVILEGES IN SCHEMA bike_order GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+ALTER DEFAULT PRIVILEGES IN SCHEMA power_bike GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+
+---27. 查询结果分隔符修改
+\a
+\f ,
+\o /home/shiguangsheng/t_city_level_info.csv
+select * from t_city_level_info;
+\q
+
+---28. 列定义
+select pg_catalog.format_type(a.atttypid, a.atttypmod) from pg_attribute as a where attname = 'city_code';
+
+---29. 日志配置
+log_line_prefix = '< %m %a %u %d %r %h >'  #打印时间，数据库名，用户名，应用程序名称等
+
+---30. 查看表名称（不包含分区表的子表）
+select relname
+  from pg_class pc
+ where relkind = 'r'
+   and not exists (select 'x' from pg_inherits where inhrelid = pc.oid)
+   and relname like 't\_%'
+ order by 1;
+
+---31. 行转列
+select string_agg(pid::text, ',') from pg_stat_activity where pid <> pg_backend_pid();
+
+---32. 列转行
+regexp_split_to_table
+
+---33. 修改系统参数
+alter system set autovacuum_max_workers=10
+
+---34. 查看权限
+select * from  information_schema.table_privileges;

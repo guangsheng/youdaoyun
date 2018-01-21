@@ -3,3 +3,5 @@
 - 导出包里的内容，而不是安装：```rpm2cpio pkgname | cpio -ivd```
 - 查看文件属于哪个包： ```rpm -qf /path/filename```
 - 检查依赖关系；并真正的安装：```rpm -ivh --test ```
+- 解压文件: ```rpm2cpio xxx.rpm | cpio -div```
+- 强制删除: ```rpm -e xxx.rpm --nodeps```

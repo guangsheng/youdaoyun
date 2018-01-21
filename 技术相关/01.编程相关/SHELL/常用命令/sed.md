@@ -31,3 +31,21 @@ s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可
 先将字符串写入到 oldstr.log 中，然后执行
 sed 's/[0-9]*[ ]*=[ ]*//g' oldstr.log
 ```
+
+#### 常用例子
+```
+#tab替换为空格
+sed  's/\t/ /g'  filename 
+
+#删除首行
+sed -i '1d' s01000000
+
+#替换tab为空格
+sed -i 's/\t/ /g' cus_temp.csv
+
+#替换 }","{ 为 换行符
+sed -i 's/}","{/\n/g' cus_temp.csv
+
+#删除尾行
+sed -i '$d' t_city_level_info.csv  
+```
