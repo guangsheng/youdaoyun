@@ -76,3 +76,9 @@ cat redis_redis8389.dump.rdb.201712261040.csv.log |grep COPY |grep -v CONTEXT |a
 ls s07_s06_s05_s04_s03_s02_* |xargs cat > err.log
 awk -F',' '{if(NF>=4)sum += $(NF-3)} END { print sum }' err.log
 ```
+
+#### 6.打印自定义内容
+cat 1.log |awk -F' ' '{print NR" "$1 $2" nan nan"}'
+
+#### 单引号
+awk '{print "'\''"}' 

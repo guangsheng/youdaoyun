@@ -1,3 +1,7 @@
+\egrep "autovacuum_vacuum_scale_factor|autovacuum_analyze_scale_factor|wal_keep_segments|checkpoint_segments|checkpoint_timeout|log_autovacuum_min_duration|autovacuum_vacuum_cost_delay|track_activity_query_size|log_temp_files|vacuum_freeze_table_age|autovacuum_freeze_max_age|autovacuum_naptime|autovacuum_max_workers"
+
+
+
 /**
    1. 修改表的autovacuum参数
    2. 重建主键索引
@@ -27,6 +31,14 @@
    26. 授权相关
    27. 查询结果分隔符修改
    28. 列定义
+   29. 日志配置
+   30. 查看表名称（不包含分区表的子表）
+   31. 行转列
+   32. 列转行
+   33. 修改系统参数
+   34. 查看权限
+   35. bike_order plproxy使用说明
+   36. 恢复user searchpath
 **/
 
 ---1. 修改表的autovacuum参数
@@ -136,7 +148,9 @@ FROM (
   ) AS s2
     JOIN pg_am am ON s2.relam = am.oid WHERE am.amname = 'btree'
 ) AS sub
-WHERE NOT is_na and tblname like 't_%' and (100 * (relpages-est_pages_ff)::float / relpages)> 40
+WHERE (tblname like 't_bike_info' or tblname like 't_month_card' or tblname like 't_clients' or tblname like 't_bike_user\_%')
+  and 100 * (relpages-est_pages_ff)::float / relpages > 40
+  and bs*(relpages)::bigint/1024/1024 > 100
 ORDER BY 2,3,4 ;
 
 ---8. 查询表膨胀情况
@@ -191,8 +205,9 @@ FROM (
     ) AS s
   ) AS s2
 ) AS s3
- WHERE NOT is_na and schemaname='bikeoss'
- ORDER BY bloat_ratio DESC;
+ WHERE tblname like 't_bike_info' or tblname like 't_month_card' or tblname like 't_clients' or tblname like 't_bike_user\_%'
+ ORDER BY bloat_ratio DESC
+ limit 50;
  
 ---9. 查询checkpoint信息
 select * from pg_stat_bgwriter;
@@ -276,6 +291,17 @@ select relname "child table", consrc "check"
    and inhparent = 't_ride_info'::regclass
  order by relname asc;
 
+--查看分区表主表
+SELECT
+    parent.relname      AS parent,
+    max(child.relname)       AS child
+FROM pg_inherits
+    JOIN pg_class parent            ON pg_inherits.inhparent = parent.oid
+    JOIN pg_class child             ON pg_inherits.inhrelid   = child.oid
+--WHERE parent.relname like 't_%'
+group by parent.relname
+order by parent.relname;
+
 ---22. 时间转换
 select to_char(snap_ts,'YYYY-MM-DD HH24:MI:SS')
 
@@ -298,7 +324,7 @@ select snap_ts, size, (size - lead(size) over(order by snap_ts desc)) as differe
 
 ---24. 查询各应用使用的连接数
 select client_addr, application_name, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by client_addr,application_name order by 3;
-select application_name, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name order by 1;
+select now(),application_name, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by 1,2 order by 2;
 select application_name, datname, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, datname order by 2;
 ---25. copy命令使用
 COPY ( 
@@ -312,6 +338,12 @@ select bike_no,produce_time, bom_guid,bom_name
 grant select on all tables in schema  bike to viewflowadmin  WITH GRANT OPTION;
 grant select on all tables in schema  bike_order to viewflowadmin  WITH GRANT OPTION;
 grant select on all tables in schema  power_bike to viewflowadmin  WITH GRANT OPTION;
+grant select on all tables in schema  cms to viewflowadmin  WITH GRANT OPTION;
+grant select on all tables in schema  bike_market to viewflowadmin  WITH GRANT OPTION;
+
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON all tables in schema bike TO bike_ext_user;
+
 
 GRANT ALL ON TABLE t_coupon_group TO bike_market;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE t_coupon_group TO bike_market_rw;
@@ -320,6 +352,13 @@ GRANT SELECT ON TABLE t_coupon_group TO bike_market_ro;
 ALTER DEFAULT PRIVILEGES IN SCHEMA bike GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
 ALTER DEFAULT PRIVILEGES IN SCHEMA bike_order GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
 ALTER DEFAULT PRIVILEGES IN SCHEMA power_bike GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+ALTER DEFAULT PRIVILEGES IN SCHEMA cms GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+ALTER DEFAULT PRIVILEGES IN SCHEMA bike_market GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+
+GRANT CONNECT ON DATABASE sms to viewflowadmin;
+GRANT USAGE ON SCHEMA sms TO viewflowadmin;
+GRANT SELECT ON ALL TABLES IN SCHEMA  sms TO viewflowadmin;
+
 
 ---27. 查询结果分隔符修改
 \a
@@ -346,10 +385,75 @@ select relname
 select string_agg(pid::text, ',') from pg_stat_activity where pid <> pg_backend_pid();
 
 ---32. 列转行
-regexp_split_to_table
+select regexp_split_to_table(name, ',') from (
+select row_to_json(b.*)::text as name from pg_stat_activity as b limit 1
+) as a;
 
 ---33. 修改系统参数
 alter system set autovacuum_max_workers=10
 
 ---34. 查看权限
 select * from  information_schema.table_privileges;
+
+---35. bike_order plproxy使用说明
+psql -d bike_order -U bike_order -p 3433 -h 10.81.62.239
+\timing
+
+1224686170
+select * from query_t_ride_info($$where guid = '15233998473271224686170' and user_new_id = '1224686170' and create_time = '2018-04-11 06:37:27.327' limit 1$$) limit 1;
+select * from query_t_ride_info($$where user_new_id = '1038911872' order by create_time desc limit 10$$) limit 10;
+
+select count(*)
+  from query_t_ride_info($$where user_new_id = '1016132154' and create_time >= '2018-03-01' and create_time < '2018-03-31'$$);
+
+select sum(i)
+ from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-03-22 08:00:00' and create_time < '2018-03-22 09:00:00'$$)
+    as t(i bigint);
+
+select sum(i)
+ from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-04-17' and create_time < '2018-04-18'$$)
+    as t(i bigint);
+
+select sum(i)
+ from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-04-18' and create_time < '2018-04-19'$$)
+    as t(i bigint);
+
+
+select sum(i)
+ from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-04-19 08:00:00' and create_time < '2018-04-19 09:00:00'$$)
+    as t(i bigint);
+
+
+select * 
+  from query_t_ride_info($$where user_guid = '3a8fe3942f6c437bb1074c733322b511' order by create_time desc limit 10$$);
+3a8fe3942f6c437bb1074c733322b511
+
+---36. 恢复user searchpath
+ alter user jinchuan set search_path = default;
+
+
+-- 37. 按表总大小排序
+select datname, pg_size_pretty(pg_database_size(oid)) from pg_database where datname not in ('postgres', 'template0','template1');
+select relname, pg_total_relation_size(oid) as total_size, pg_size_pretty(pg_total_relation_size(oid)) as pretty_size 
+ from pg_class 
+where relkind = 'r'
+order by 2 desc limit 20;
+
+select pg_size_pretty(sum(total_size)) from
+(select relname, pg_total_relation_size(oid) as total_size, pg_size_pretty(pg_total_relation_size(oid)) as pretty_size 
+ from pg_class 
+where relkind = 'r'
+order by 2 desc limit 20) as a;
+
+-- 38. 查询当前登录用户
+select * from current_user;
+
+-- 39. 找出某个用户没有权限的表
+select relname, pg_catalog.pg_get_userbyid(relowner) as owner, pg_catalog.array_to_string(relacl, E'\n  ') as relacl
+  from pg_class
+ where relkind = 'r' and relname like 't\_%'
+   and pg_catalog.pg_get_userbyid(relowner) <> 'bike_rw'
+   and pg_catalog.array_to_string(relacl, E'\n  ') not like '%bike_rw%';
+
+-- 40. 继承关系修改
+alter table t_ride_info_201701 NO INHERIT t_ride_info;

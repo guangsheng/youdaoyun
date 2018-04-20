@@ -35,7 +35,10 @@ sed 's/[0-9]*[ ]*=[ ]*//g' oldstr.log
 #### 常用例子
 ```
 #tab替换为空格
-sed  's/\t/ /g'  filename 
+sed -i 's/\t/ /g'  filename 
+
+#替换多个空格为1个
+sed -i 's/[ ][ ]*/ /g'  file.txt
 
 #删除首行
 sed -i '1d' s01000000

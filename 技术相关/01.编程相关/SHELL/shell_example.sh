@@ -48,3 +48,8 @@ do
         echo "`date`: $loop_j"
     fi
 done
+
+((i=$j+$k))    等价于 i=`expr $j + $k`
+((i=$j-$k))     等价于   i=`expr $j -$k`
+((i=$j*$k))     等价于   i=`expr $j \*$k`
+((i=$j/$k))     等价于   i=`expr $j /$k`

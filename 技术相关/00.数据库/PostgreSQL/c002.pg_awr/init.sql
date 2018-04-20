@@ -539,8 +539,8 @@ FROM (
   LEFT JOIN pg_class c2 ON c2.oid = i.indexrelid
 ) AS sml order by wastedbytes desc limit 10;
 
--- 库级, 索引膨胀前10
-insert into snap_pg_index_bloat select snap_id, ts snap_ts, 
+-- 库级, 表和索引膨胀情况收集
+insert into snap_pg_index_bloat select * from ( select snap_id, ts snap_ts, 
   current_database() AS db, schemaname, tablename, reltuples::bigint AS tups, relpages::bigint AS pages, otta,
   ROUND(CASE WHEN otta=0 OR sml.relpages=0 OR sml.relpages=otta THEN 0.0 ELSE sml.relpages/otta::numeric END,1) AS tbloat,
   CASE WHEN relpages < otta THEN 0 ELSE relpages::bigint - otta END AS wastedpages,
@@ -608,7 +608,12 @@ FROM (
   ON cc.relname = rs.relname AND nn.nspname = rs.nspname
   LEFT JOIN pg_index i ON indrelid = cc.oid
   LEFT JOIN pg_class c2 ON c2.oid = i.indexrelid
-) AS sml order by wastedibytes desc limit 10;
+) AS sml ) as sml_t
+ where tablename like 't\_%'
+   --and (wastedbytes >= 10240 or wastedibytes>= 10240)
+   --and (tbloat >= 0.01 or ibloat >= 0.01)
+ limit 1000
+   ;
 
 -- 库级, 垃圾数据前十  
 insert into snap_pg_dead_tup select snap_id, ts snap_ts, current_database(),schemaname,relname,n_dead_tup from pg_stat_all_tables where n_live_tup>0 and (n_dead_tup/n_live_tup)>0.2 and schemaname not in ($$pg_toast$$,$$pg_catalog$$) order by n_dead_tup desc limit 10;
@@ -696,6 +701,7 @@ end if;
 reset search_path;
 end;
 $_$ language plpgsql strict;
+
 
 -- 清理快照函数 
 
