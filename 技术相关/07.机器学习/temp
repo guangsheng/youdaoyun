@@ -1,0 +1,10 @@
+https://colab.research.google.com/notebooks/welcome.ipynb#scrollTo=xqrc5C-IaA5J
+
+https://developers.google.cn/machine-learning/crash-course/prereqs-and-prework
+
+运行基础环境
+
+1. 
+docker run -it -p "127.0.0.1:8081:8080" -v "${HOME}:/content"  gcr.io/cloud-datalab/datalab:local-20170224
+2.
+http://localhost:8081/

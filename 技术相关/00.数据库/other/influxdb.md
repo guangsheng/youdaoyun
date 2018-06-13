@@ -320,3 +320,13 @@ show tag values from stat_statements with key = "query" WHERE dbname = 'pro_rds_
 
 SELECT non_negative_derivative(mean("total_time"), 1h) / non_negative_derivative(mean("calls"), 1h) FROM "stat_statements" WHERE "queryid" =~ /^$queryid$/ AND $timeFilter GROUP BY time($interval), "queryid" fill(null)
 ```
+
+```
+show tag keys from table_stats;
+show field keys from table_stats;
+show tag values from table_stats with key = "dbname" where dbname = 'pro_rds_bike';
+show tag values from table_stats with key = "table_name" where dbname = 'pro_rds_bike';
+show tag values from table_stats with key = "table_name" where dbname =~ /pro_rds_bike/;
+
+select max(QPS)/60 from (select non_negative_derivative(mean(seq_scan), 1m) + non_negative_derivative(mean(idx_scan), 1m) AS QPS FROM table_stats where dbname = 'pro_rds_bike' and table_name = 't_month_card' and time >= '2018-05-25 00:00:00' and time < '2018-05-25 01:00:00' group by time(1m) fill(none))
+```

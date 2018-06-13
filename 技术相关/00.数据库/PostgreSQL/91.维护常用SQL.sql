@@ -65,14 +65,14 @@ select now(), relname, relpages, reltuples, relpages/128 as size from pg_class
 select now(), pg_current_xlog_location();
 
 ---6. 查询当前还在执行的执行时间最长的SQL
-  SELECT now(), query, query_start,
-         EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM query_start) AS duration 
-    FROM pg_stat_activity 
-   WHERE state = 'active' 
-     AND pid != pg_backend_pid()
-     --and EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM query_start)  > 5
-   ORDER BY duration DESC 
-   LIMIT 1;
+SELECT now(), query, query_start,
+       EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM query_start) AS duration 
+  FROM pg_stat_activity 
+ WHERE state = 'active' 
+   AND pid != pg_backend_pid()
+   --and EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM query_start)  > 5
+ ORDER BY duration DESC 
+ LIMIT 1;
 
 ---7. 查询索引膨胀情况
 SELECT tblname, idxname, bs*(relpages)::bigint AS real_size,
@@ -205,9 +205,9 @@ FROM (
     ) AS s
   ) AS s2
 ) AS s3
- WHERE tblname like 't_bike_info' or tblname like 't_month_card' or tblname like 't_clients' or tblname like 't_bike_user\_%'
+ WHERE tblname like 't\_%'
  ORDER BY bloat_ratio DESC
- limit 50;
+ limit 10;
  
 ---9. 查询checkpoint信息
 select * from pg_stat_bgwriter;
@@ -325,7 +325,7 @@ select snap_ts, size, (size - lead(size) over(order by snap_ts desc)) as differe
 ---24. 查询各应用使用的连接数
 select client_addr, application_name, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by client_addr,application_name order by 3;
 select now(),application_name, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by 1,2 order by 2;
-select application_name, datname, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, datname order by 2;
+select application_name, datname, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, datname order by 2;applica
 ---25. copy命令使用
 COPY ( 
 select bike_no,produce_time, bom_guid,bom_name 
@@ -357,7 +357,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA bike_market GRANT SELECT ON TABLES TO viewflo
 
 GRANT CONNECT ON DATABASE sms to viewflowadmin;
 GRANT USAGE ON SCHEMA sms TO viewflowadmin;
-GRANT SELECT ON ALL TABLES IN SCHEMA  sms TO viewflowadmin;
+GRANT SELECT ON ALL TABLES IN SCHEMA  bike_vip TO viewflowadmin with GRANT OPTION;;
 
 
 ---27. 查询结果分隔符修改
@@ -407,29 +407,32 @@ select count(*)
   from query_t_ride_info($$where user_new_id = '1016132154' and create_time >= '2018-03-01' and create_time < '2018-03-31'$$);
 
 select sum(i)
- from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-03-22 08:00:00' and create_time < '2018-03-22 09:00:00'$$)
+ from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-04-27 08:00:00' and create_time < '2018-04-27 09:00:00'$$)
     as t(i bigint);
 
 select sum(i)
- from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-04-17' and create_time < '2018-04-18'$$)
+ from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-05-25' and create_time < '2018-05-25 08:30:00'$$)
     as t(i bigint);
 
 select sum(i)
- from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-04-18' and create_time < '2018-04-19'$$)
+ from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-05-24' and create_time < '2018-05-25'$$)
     as t(i bigint);
 
+select sum(i)
+ from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-05-02' and create_time < '2018-05-03'$$)
+    as t(i bigint);
 
 select sum(i)
- from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-04-19 08:00:00' and create_time < '2018-04-19 09:00:00'$$)
+ from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-04-19 18:08:00' and create_time < '2018-04-19 18:15:00'$$)
     as t(i bigint);
 
 
 select * 
   from query_t_ride_info($$where user_guid = '3a8fe3942f6c437bb1074c733322b511' order by create_time desc limit 10$$);
-3a8fe3942f6c437bb1074c733322b511
+
 
 ---36. 恢复user searchpath
- alter user jinchuan set search_path = default;
+alter user jinchuan set search_path = default;
 
 
 -- 37. 按表总大小排序
@@ -457,3 +460,9 @@ select relname, pg_catalog.pg_get_userbyid(relowner) as owner, pg_catalog.array_
 
 -- 40. 继承关系修改
 alter table t_ride_info_201701 NO INHERIT t_ride_info;
+
+-- 41. 设置索引为 invalid 和 valid   必须是超级管理员
+----设置为invalid
+update pg_index set indisvalid=false where indexrelid='i_ii'::regclass;
+----设置为valid
+update pg_index set indisvalid=true where indexrelid='i_ii'::regclass;
