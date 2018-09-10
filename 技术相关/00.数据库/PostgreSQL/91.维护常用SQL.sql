@@ -48,6 +48,7 @@ toast.autovacuum_vacuum_cost_delay=10, toast.autovacuum_vacuum_scale_factor=0.05
 select relname, reloptions from pg_class where relname in ('t_bike_alert_20171020', 't_bike_alert_live');
 
 ---2. 重建主键索引
+CREATE INDEX CONCURRENTLY t_bike_alert_live_pkey_new ON t_bike_alert_live(guid);
 CREATE UNIQUE INDEX CONCURRENTLY t_bike_alert_live_pkey_new ON t_bike_alert_live(guid);
 ALTER TABLE t_bike_alert_live DROP CONSTRAINT t_bike_alert_live_pkey;
 ALTER TABLE t_bike_alert_live ADD CONSTRAINT t_bike_alert_live_pkey_new PRIMARY KEY USING INDEX t_bike_alert_live_pkey_new;
@@ -148,8 +149,8 @@ FROM (
   ) AS s2
     JOIN pg_am am ON s2.relam = am.oid WHERE am.amname = 'btree'
 ) AS sub
-WHERE (tblname like 't_bike_info' or tblname like 't_month_card' or tblname like 't_clients' or tblname like 't_bike_user\_%')
-  and 100 * (relpages-est_pages_ff)::float / relpages > 40
+WHERE 100 * (relpages-est_pages_ff)::float / relpages > 40
+  --and (tblname like 't_bike_info' or tblname like 't_month_card' or tblname like 't_clients' or tblname like 't_bike_user\_%')
   and bs*(relpages)::bigint/1024/1024 > 100
 ORDER BY 2,3,4 ;
 
@@ -288,7 +289,7 @@ select relname "child table", consrc "check"
        join pg_class c on c.oid = inhrelid
        join pg_constraint on c.oid = conrelid
  where contype = 'c'
-   and inhparent = 't_ride_info'::regclass
+   and inhparent = 't_user_point_change_record'::regclass
  order by relname asc;
 
 --查看分区表主表
@@ -323,9 +324,10 @@ select snap_ts, size, (size - lead(size) over(order by snap_ts desc)) as differe
     ) t;
 
 ---24. 查询各应用使用的连接数
-select client_addr, application_name, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by client_addr,application_name order by 3;
 select now(),application_name, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by 1,2 order by 2;
-select application_name, datname, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, datname order by 2;applica
+select application_name, datname, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, datname order by 2;
+select application_name, client_addr, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, client_addr order by 2;
+
 ---25. copy命令使用
 COPY ( 
 select bike_no,produce_time, bom_guid,bom_name 
@@ -335,11 +337,11 @@ select bike_no,produce_time, bom_guid,bom_name
  to '/var/tmp/sgs/bike_info.csv' with csv;
 
 ---26. 授权相关
-grant select on all tables in schema  bike to viewflowadmin  WITH GRANT OPTION;
+grant select on all tables in schema  hello_moment to viewflowadmin  WITH GRANT OPTION;
 grant select on all tables in schema  bike_order to viewflowadmin  WITH GRANT OPTION;
 grant select on all tables in schema  power_bike to viewflowadmin  WITH GRANT OPTION;
 grant select on all tables in schema  cms to viewflowadmin  WITH GRANT OPTION;
-grant select on all tables in schema  bike_market to viewflowadmin  WITH GRANT OPTION;
+grant select on all tables in schema  bike_pay to viewflowadmin  WITH GRANT OPTION;
 
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON all tables in schema bike TO bike_ext_user;
@@ -349,16 +351,16 @@ GRANT ALL ON TABLE t_coupon_group TO bike_market;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE t_coupon_group TO bike_market_rw;
 GRANT SELECT ON TABLE t_coupon_group TO bike_market_ro;
 
-ALTER DEFAULT PRIVILEGES IN SCHEMA bike GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+ALTER DEFAULT PRIVILEGES IN SCHEMA hello_moment GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
 ALTER DEFAULT PRIVILEGES IN SCHEMA bike_order GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
 ALTER DEFAULT PRIVILEGES IN SCHEMA power_bike GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
-ALTER DEFAULT PRIVILEGES IN SCHEMA cms GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
-ALTER DEFAULT PRIVILEGES IN SCHEMA bike_market GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+ALTER DEFAULT PRIVILEGES IN SCHEMA css GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+ALTER DEFAULT PRIVILEGES IN SCHEMA bike_pay GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
 
-GRANT CONNECT ON DATABASE sms to viewflowadmin;
-GRANT USAGE ON SCHEMA sms TO viewflowadmin;
-GRANT SELECT ON ALL TABLES IN SCHEMA  bike_vip TO viewflowadmin with GRANT OPTION;;
-
+GRANT CONNECT ON DATABASE bike_ride_card to viewflowadmin;
+GRANT USAGE ON SCHEMA bike_ride_card TO viewflowadmin;
+GRANT SELECT ON ALL TABLES IN SCHEMA  bike_ride_card TO viewflowadmin with GRANT OPTION;
+ALTER DEFAULT PRIVILEGES IN SCHEMA bike_ride_card GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
 
 ---27. 查询结果分隔符修改
 \a
@@ -396,18 +398,22 @@ alter system set autovacuum_max_workers=10
 select * from  information_schema.table_privileges;
 
 ---35. bike_order plproxy使用说明
-psql -d bike_order -U bike_order -p 3433 -h 10.81.62.239
+psql -d bike_order -U bike_order -p 3433 -h 10.111.50.183
 \timing
 
 1224686170
 select * from query_t_ride_info($$where guid = '15233998473271224686170' and user_new_id = '1224686170' and create_time = '2018-04-11 06:37:27.327' limit 1$$) limit 1;
-select * from query_t_ride_info($$where user_new_id = '1038911872' order by create_time desc limit 10$$) limit 10;
+select * from query_t_ride_info($$where user_new_id = '1038911872' and create_time >= '2018-07-21' limit 10$$) limit 10;
 
-select count(*)
-  from query_t_ride_info($$where user_new_id = '1016132154' and create_time >= '2018-03-01' and create_time < '2018-03-31'$$);
+select *
+  from query_t_ride_info($$where user_new_id = '9994000151' and create_time >= '2018-08-17' and create_time < '2018-08-18'$$);
 
 select sum(i)
- from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-04-27 08:00:00' and create_time < '2018-04-27 09:00:00'$$)
+ from dynamic_query($$select count(*) from v_t_ride_info where create_time >= '2018-07-16 00:00:00' and create_time < '2018-07-16 19:00:00'$$)
+    as t(i bigint);
+
+select sum(i)
+ from dynamic_query($$select count(*) from v_t_ride_info where create_time >= '2018-07-15 00:00:00' and create_time < '2018-07-15 19:00:00'$$)
     as t(i bigint);
 
 select sum(i)
@@ -419,7 +425,7 @@ select sum(i)
     as t(i bigint);
 
 select sum(i)
- from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-05-02' and create_time < '2018-05-03'$$)
+ from dynamic_query_dba($$select count(*) from v_t_ride_info where create_time >= '2018-08-21' and create_time < '2018-08-22'$$)
     as t(i bigint);
 
 select sum(i)
@@ -437,6 +443,7 @@ alter user jinchuan set search_path = default;
 
 -- 37. 按表总大小排序
 select datname, pg_size_pretty(pg_database_size(oid)) from pg_database where datname not in ('postgres', 'template0','template1');
+
 select relname, pg_total_relation_size(oid) as total_size, pg_size_pretty(pg_total_relation_size(oid)) as pretty_size 
  from pg_class 
 where relkind = 'r'
@@ -466,3 +473,9 @@ alter table t_ride_info_201701 NO INHERIT t_ride_info;
 update pg_index set indisvalid=false where indexrelid='i_ii'::regclass;
 ----设置为valid
 update pg_index set indisvalid=true where indexrelid='i_ii'::regclass;
+
+---42. 查看主从差异
+select client_addr,pg_current_xlog_location(),sent_location,write_location,replay_location,pg_xlog_location_diff(pg_current_xlog_location(), replay_location) as diff from pg_stat_replication;
+
+---43. 导出表结构
+pg_dump bike -p 3430 -h 10.111.50.187 -U bike --schema-only --encoding='UTF8' --table='t_student_award_record' |grep -v "^\-\-" |grep -v "^$" |grep -v "^SET " |grep -v "^REVOKE " |grep -v "^GRANT " 

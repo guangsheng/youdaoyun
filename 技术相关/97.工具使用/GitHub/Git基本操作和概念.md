@@ -31,7 +31,7 @@ git push
 查看本次提交和上次提交的差别（即修改了什么） git diff HEAD
 
 #### Git分支相关操作
-##### git branch       --显示分支一览表
+##### git branch -a      --显示分支一览表
 ##### git checkout -b  --创建并切换分支
 git checkout -  切回上一个分支
 git checkout name  切回指定分支
