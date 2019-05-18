@@ -1,4 +1,4 @@
-\egrep "autovacuum_vacuum_scale_factor|autovacuum_analyze_scale_factor|wal_keep_segments|checkpoint_segments|checkpoint_timeout|log_autovacuum_min_duration|autovacuum_vacuum_cost_delay|track_activity_query_size|log_temp_files|vacuum_freeze_table_age|autovacuum_freeze_max_age|autovacuum_naptime|autovacuum_max_workers"
+egrep "autovacuum_vacuum_scale_factor|autovacuum_analyze_scale_factor|wal_keep_segments|checkpoint_segments|checkpoint_timeout|log_autovacuum_min_duration|autovacuum_vacuum_cost_delay|track_activity_query_size|log_temp_files|vacuum_freeze_table_age|autovacuum_freeze_max_age|autovacuum_naptime|autovacuum_max_workers"
 
 
 
@@ -39,7 +39,16 @@
    34. 查看权限
    35. bike_order plproxy使用说明
    36. 恢复user searchpath
+   37. 按表总大小排序
+   38. 查询当前登录用户
+   39. 找出某个用户没有权限的表
+   40. 继承关系修改
+   41. 设置索引为 invalid 和 valid   必须是超级管理员
+   42. 查看主从差异
+   43. 导出表结构
 **/
+
+
 
 ---1. 修改表的autovacuum参数
 alter table t_bike_alert_live SET (autovacuum_vacuum_cost_delay=10, autovacuum_vacuum_cost_limit=10000, autovacuum_vacuum_scale_factor=0.02, autovacuum_analyze_scale_factor=0.02, 
@@ -147,12 +156,12 @@ FROM (
       GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9
     ) AS s1
   ) AS s2
-    JOIN pg_am am ON s2.relam = am.oid WHERE am.amname = 'btree'
+    JOIN pg_am am ON s2.relam = am.oid --WHERE am.amname = 'btree'
 ) AS sub
 WHERE 100 * (relpages-est_pages_ff)::float / relpages > 40
   --and (tblname like 't_bike_info' or tblname like 't_month_card' or tblname like 't_clients' or tblname like 't_bike_user\_%')
   and bs*(relpages)::bigint/1024/1024 > 100
-ORDER BY 2,3,4 ;
+ORDER BY bloat_size desc,bloat_ratio desc;
 
 ---8. 查询表膨胀情况
 SELECT current_database(), schemaname, tblname, bs*tblpages AS real_size,
@@ -303,6 +312,9 @@ FROM pg_inherits
 group by parent.relname
 order by parent.relname;
 
+--查看业务表（排除分区表子表）
+select relname from pg_class where relkind = 'r' and relname like 't\_%' and not exists(select 'x' from pg_inherits where pg_inherits.inhrelid = pg_class.oid) order by 1;
+
 ---22. 时间转换
 select to_char(snap_ts,'YYYY-MM-DD HH24:MI:SS')
 
@@ -357,10 +369,20 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA power_bike GRANT SELECT ON TABLES TO viewflow
 ALTER DEFAULT PRIVILEGES IN SCHEMA css GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
 ALTER DEFAULT PRIVILEGES IN SCHEMA bike_pay GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
 
-GRANT CONNECT ON DATABASE bike_ride_card to viewflowadmin;
-GRANT USAGE ON SCHEMA bike_ride_card TO viewflowadmin;
-GRANT SELECT ON ALL TABLES IN SCHEMA  bike_ride_card TO viewflowadmin with GRANT OPTION;
-ALTER DEFAULT PRIVILEGES IN SCHEMA bike_ride_card GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+CREATE ROLE viewflowadmin LOGIN  ENCRYPTED PASSWORD 'xxxxx' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;
+GRANT CONNECT ON DATABASE sms to viewflowadmin;
+GRANT USAGE ON SCHEMA sms TO viewflowadmin;
+GRANT SELECT ON ALL TABLES IN SCHEMA  sms TO viewflowadmin with GRANT OPTION;
+ALTER DEFAULT PRIVILEGES IN SCHEMA sms GRANT SELECT ON TABLES TO viewflowadmin WITH GRANT OPTION;
+
+
+create user hellobike_ro encrypted password 'xxxx';
+GRANT USAGE ON SCHEMA hello_taxi TO  hellobike_ro;
+GRANT CONNECT ON DATABASE hello_hitch_match to hellobike_ro;
+ALTER user  hellobike_ro set statement_timeout='30s';
+ALTER user  hellobike_ro CONNECTION LIMIT 20;
+GRANT SELECT ON ALL TABLES IN SCHEMA  hello_hitch_match TO hellobike_ro;
+ALTER DEFAULT PRIVILEGES IN SCHEMA hello_hitch_match GRANT SELECT ON TABLES TO hellobike_ro;
 
 ---27. 查询结果分隔符修改
 \a
@@ -406,7 +428,7 @@ select * from query_t_ride_info($$where guid = '15233998473271224686170' and use
 select * from query_t_ride_info($$where user_new_id = '1038911872' and create_time >= '2018-07-21' limit 10$$) limit 10;
 
 select *
-  from query_t_ride_info($$where user_new_id = '9994000151' and create_time >= '2018-08-17' and create_time < '2018-08-18'$$);
+  from query_t_ride_info($$where bike_no = '7910691591' and create_time >= '2018-08-08' and create_time < '2018-08-09'$$);
 
 select sum(i)
  from dynamic_query($$select count(*) from v_t_ride_info where create_time >= '2018-07-16 00:00:00' and create_time < '2018-07-16 19:00:00'$$)
@@ -475,7 +497,68 @@ update pg_index set indisvalid=false where indexrelid='i_ii'::regclass;
 update pg_index set indisvalid=true where indexrelid='i_ii'::regclass;
 
 ---42. 查看主从差异
-select client_addr,pg_current_xlog_location(),sent_location,write_location,replay_location,pg_xlog_location_diff(pg_current_xlog_location(), replay_location) as diff from pg_stat_replication;
+select client_addr,pg_current_xlog_location(),sent_location,write_location,replay_location,pg_size_pretty(pg_xlog_location_diff(pg_current_xlog_location(), replay_location)) as diff from pg_stat_replication;
 
 ---43. 导出表结构
 pg_dump bike -p 3430 -h 10.111.50.187 -U bike --schema-only --encoding='UTF8' --table='t_student_award_record' |grep -v "^\-\-" |grep -v "^$" |grep -v "^SET " |grep -v "^REVOKE " |grep -v "^GRANT " 
+
+---44. 锁信息
+SELECT
+    waiting_stm.datname        AS db_name,
+    waiting_stm.usename        AS waiting_username,
+    waiting_stm.application_name AS waiting_appname,
+    replace(replace(replace(replace(waiting_stm.query,'''', ''),chr(34),''),E'\n',' '),E'\t',' ') AS waiting_query,
+    (select pc.relname
+       from pg_locks pl, pg_class pc
+      where pl.pid = waiting.pid
+        and pl.relation = pc.oid
+        and pl.locktype = 'tuple'
+      limit 1) AS waiting_table,
+    (EXTRACT(epoch FROM (now() - waiting_stm.query_start)))::int AS waiting_duration,
+    waiting_stm.state          AS waiting_query_state,
+    waiting.pid                AS waiting_pid,
+    other_stm.usename          AS other_username,
+    other_stm.application_name AS other_appname,
+    replace(replace(replace(replace(other_stm.query,'''', ''),chr(34),''),E'\n',' '),E'\t',' ') AS other_query,
+    other.relation::regclass   AS other_table,
+    now()                      AS snap_ts
+FROM pg_catalog.pg_locks AS waiting
+    JOIN pg_catalog.pg_stat_activity AS waiting_stm
+         ON waiting_stm.pid = waiting.pid
+    JOIN pg_catalog.pg_locks AS other
+         ON (
+             ( waiting.database = other.database AND waiting.relation  = other.relation )
+             OR waiting.transactionid = other.transactionid )
+    JOIN pg_catalog.pg_stat_activity AS other_stm
+         ON other_stm.pid = other.pid
+WHERE NOT waiting.GRANTED
+  AND waiting_stm.query_start < now() - interval '0.1 second'
+  AND waiting.pid <> other.pid;
+
+---45. psql登录指定会话参数
+psql options=-csession_preload_libraries=''
+
+---46. 停掉指定应用的所有连接
+do language plpgsql $$
+declare
+  v_pid integer;
+begin
+  for v_pid in select pid from pg_stat_activity where usename is not null and pid <> pg_backend_pid() and application_name = 'APPxxx' and datname = 'bike'
+  loop
+      perform pg_terminate_backend(v_pid);
+  end loop; 
+end;
+$$;
+
+
+---47. 停掉指定用户连接的应用
+do language plpgsql $$
+declare
+  v_pid integer;
+begin
+  for v_pid in select pid from pg_stat_activity where pid <> pg_backend_pid() and usename = 'bike_rw'
+  loop
+      perform pg_terminate_backend(v_pid);
+  end loop; 
+end;
+$$;

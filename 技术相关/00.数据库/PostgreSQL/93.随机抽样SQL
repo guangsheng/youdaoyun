@@ -1,0 +1,15 @@
+--9.5之前
+ORDER BY random()
+
+--之后
+SELECT …
+FROM table_name
+TABLESAMPLE sampling_method ( argument [, ...] ) [ REPEATABLE ( seed ) ]
+--sampling_method指抽样方法，主要有两种：SYSTEM和BERNOULLI
+
+
+--抽样返回0.01%的数据
+-----更快
+SELECT * FROM test_sample TABLESAMPLE SYSTEM(0.01)
+-----更准
+SELECT count(*) FROM test_sample TABLESAMPLE BERNOULLI(0.01);

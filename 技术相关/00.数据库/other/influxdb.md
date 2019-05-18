@@ -79,6 +79,8 @@ select mean(value) from cpu_idle group by time(30m) where time > now() – 1d an
 select reqtime, url from web9999.httpd where url =~ /^\/login\//;
 ```
 
+
+
 #### 说明
 - 如果查询的field不存在，并不会报错，只是不返回任何记录
 - SLIMIT : series limit

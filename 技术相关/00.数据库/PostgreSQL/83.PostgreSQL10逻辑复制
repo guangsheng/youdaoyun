@@ -18,7 +18,7 @@
 - ```max_worker_processes```
 
 #### 约束（也可以理解为当前还不支持的功能）
-- The database schema and DDL commands are not replicated     ?? CREATE TABLE XX AS SELECT 以及 COPY命令是否支持
+- The database schema and DDL commands are not replicated
 - Sequence data is not replicated. 
 - TRUNCATE commands are not replicated.
 - Large objects are not replicated.

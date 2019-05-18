@@ -75,6 +75,29 @@ done
 cat redis_redis8389.dump.rdb.201712261040.csv.log |grep COPY |grep -v CONTEXT |awk -F' ' '{ sum += $2 } END { print sum }'
 ls s07_s06_s05_s04_s03_s02_* |xargs cat > err.log
 awk -F',' '{if(NF>=4)sum += $(NF-3)} END { print sum }' err.log
+
+cat xxx.log |head |awk -F" " '{print $8}' |awk -F',' 'BEGIN{
+RS="\n+"
+}
+{
+sum+=$0
+}
+NR==1 {
+max=$1;min=$1
+next
+}
+$1>max {
+max=$1
+}
+$1<min {
+min=$1
+}
+END{
+printf "max number is:%s\n",max
+printf "min number is:%s\n",min
+printf "sum number is:%s\n",sum
+printf "average is:%.2f\n",sum/NR
+}'
 ```
 
 #### 6.打印自定义内容
@@ -82,3 +105,18 @@ cat 1.log |awk -F' ' '{print NR" "$1 $2" nan nan"}'
 
 #### 单引号
 awk '{print "'\''"}' 
+
+#### 分类统计
+```
+$ cat datafile
+姓名   类型 金额
+张三    1   27.43
+李四    2   33.44
+张三    2   55.55
+丁六    1   66.66
+赵七    1  77.77
+$ cat datafile |awk -F' ' '{types[$2]+=$3;count[$2]++}END{for(i in types) printf"类型%s 共%d行 合计 %f\n",i,count[i],types[i]}'
+类型类型 共1行 合计 0.000000
+类型1 共3行 合计 171.860000
+类型2 共2行 合计 88.990000
+```
