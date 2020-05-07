@@ -1,0 +1,103 @@
+t_activity_coupons
+
+psql -p 3433 -h  rm-bp11sfez13ft66ugn613.pg.rds.aliyuncs.com  -d bike_market -U bike_market
+psql -U cms -d cms -h rm-bp1usexc320p81ecf895.pg.rds.aliyuncs.com -p3433
+
+
+psql -p 3433 -h 10.111.21.85 -d bike_market -U bike_market
+
+
+
+##
+t_dup_sgs_20191114
+
+
+##
+create table t_sgs_20191114 as select * from t_user_power_coupon where create_date > '2019-11-12 14:00:00';
+create index idx_t_sgs_20191114 on t_sgs_20191114(user_guid, coupon_batch);
+create index idx_t_sgs_20191114_1 on t_sgs_20191114(coupon_batch);
+
+create table t_sgs_20191114_2 as
+select a.* from t_sgs_20191114 a, t_coupon_batch b where a.coupon_batch=b.coupon_batch and b.situation=2;
+create index idx_t_sgs_20191114_2 on t_sgs_20191114_2(user_guid, coupon_batch);
+
+create table t_dup_sgs_20191114
+as 
+select user_guid, coupon_batch, count(*) from t_sgs_20191114_2 group by 1,2 having(count(*)>=2);
+
+create index idx_t_dup_sgs_20191114 on t_dup_sgs_20191114(user_guid, coupon_batch);
+
+create table t_sgs_20191114_dup_detail
+as select b.* from t_dup_sgs_20191114 a, t_sgs_20191114_2 b 
+ where a.user_guid = b.user_guid and a.coupon_batch = b.coupon_batch;
+
+
+select count(*) from t_sgs_20191114_dup_detail where consume_date is not null;
+
+
+
+select count(*) from (select user_guid, coupon_batch, count(*) from t_sgs_20191114_dup_detail group by 1,2 having(count(*) >=10)) as b;
+
+##
+t_sgs_20191114
+t_dup_sgs_20191114
+
+
+
+##
+select sum(a.coupon_amount) as coupon_amount
+  from t_sgs_20191114_dup_detail as a,
+(select user_guid, coupon_batch, count(*) from t_sgs_20191114_dup_detail group by 1,2 having(count(*) >=10)) as b
+ where a.user_guid = b.user_guid and a.coupon_batch = b.coupon_batch;
+
+
+select sum(a.coupon_amount) as coupon_amount
+  from t_sgs_20191114_dup_detail as a,
+(select user_guid, coupon_batch, count(*) from t_sgs_20191114_dup_detail group by 1,2 having(count(*) >=5)) as b
+ where a.user_guid = b.user_guid and a.coupon_batch = b.coupon_batch;
+
+
+ ##
+select * from t_activity_coupons where coupon_batch_config::text like '%20191105-3285%';
+
+##
+select sum(num) from (select user_guid, coupon_batch, count(*) as num from t_sgs_20191114_dup_detail group by 1,2 having(count(*) >=5)) as b;
+
+select count(distinct user_guid) from (select user_guid, coupon_batch, count(*) as num from t_sgs_20191114_dup_detail group by 1,2 having(count(*) >=10)) as b;
+
+create table t_sgs_20191114_dup_detail_del_guid as
+select guid from (
+select t1.guid, t1.user_guid, t1.coupon_batch from t_sgs_20191114_dup_detail t1, (
+select a.user_guid, a.coupon_batch, min(a.guid) as guid
+  from t_sgs_20191114_dup_detail a, 
+       (select user_guid, coupon_batch, count(*) from t_sgs_20191114_dup_detail group by 1,2 having(count(*) >=5)) as b
+ where a.user_guid = b.user_guid and a.coupon_batch = b.coupon_batch
+   and a.consume_date is null
+ group by 1,2) as t2
+ where t1.user_guid = t2.user_guid and t1.coupon_batch = t2.coupon_batch and t1.guid <> t2.guid
+) as tt1;
+
+
+
+select count(distinct user_guid) as pepole_num, count(*) as coupon_num, sum(coupon_amount) as coupon_money from t_sgs_20191114_dup_detail where guid in (select guid from t_sgs_20191114_dup_detail_del_guid);
+
+\o update_t_user_power_coupon_status.sql
+\t
+select 'update t_user_power_coupon set coupon_status  = 2 where guid = '''||guid||''' and coupon_status <> 2;' from t_sgs_20191114_dup_detail_del_guid;
+
+\o update_t_user_power_coupon_status_update_date.sql
+\t
+select 'update t_user_power_coupon set update_date  = now() where guid = '''||guid||''' and coupon_status = 2;' from t_sgs_20191114_dup_detail_del_guid;
+
+
+\o temp_user_guid
+select distinct user_guid from t_sgs_20191114_dup_detail where guid in (select guid from t_sgs_20191114_dup_detail_del_guid);
+##
+5489
+
+73876
+
+68387
+68387
+
+68366

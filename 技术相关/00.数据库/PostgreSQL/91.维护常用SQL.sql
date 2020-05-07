@@ -1,7 +1,6 @@
 egrep "autovacuum_vacuum_scale_factor|autovacuum_analyze_scale_factor|wal_keep_segments|checkpoint_segments|checkpoint_timeout|log_autovacuum_min_duration|autovacuum_vacuum_cost_delay|track_activity_query_size|log_temp_files|vacuum_freeze_table_age|autovacuum_freeze_max_age|autovacuum_naptime|autovacuum_max_workers"
 
 
-
 /**
    1. 修改表的autovacuum参数
    2. 重建主键索引
@@ -43,7 +42,7 @@ egrep "autovacuum_vacuum_scale_factor|autovacuum_analyze_scale_factor|wal_keep_s
    38. 查询当前登录用户
    39. 找出某个用户没有权限的表
    40. 继承关系修改
-   41. 设置索引为 invalid 和 valid   必须是超级管理员
+   41. 设置索引为 invalid 和 valid 必须是超级管理员
    42. 查看主从差异
    43. 导出表结构
 **/
@@ -158,7 +157,7 @@ FROM (
   ) AS s2
     JOIN pg_am am ON s2.relam = am.oid --WHERE am.amname = 'btree'
 ) AS sub
-WHERE 100 * (relpages-est_pages_ff)::float / relpages > 40
+WHERE 100 * (relpages-est_pages_ff)::float / relpages > 60
   --and (tblname like 't_bike_info' or tblname like 't_month_card' or tblname like 't_clients' or tblname like 't_bike_user\_%')
   and bs*(relpages)::bigint/1024/1024 > 100
 ORDER BY bloat_size desc,bloat_ratio desc;
@@ -215,7 +214,7 @@ FROM (
     ) AS s
   ) AS s2
 ) AS s3
- WHERE tblname like 't\_%'
+ WHERE tblname not like 'pg\_%'
  ORDER BY bloat_ratio DESC
  limit 10;
  
@@ -298,7 +297,7 @@ select relname "child table", consrc "check"
        join pg_class c on c.oid = inhrelid
        join pg_constraint on c.oid = conrelid
  where contype = 'c'
-   and inhparent = 't_user_point_change_record'::regclass
+   and inhparent = 't_operate_order_inventory_list'::regclass
  order by relname asc;
 
 --查看分区表主表
@@ -312,8 +311,20 @@ FROM pg_inherits
 group by parent.relname
 order by parent.relname;
 
+select parent, max(child) as child, pg_size_pretty(sum(child_size)) as total_size
+from (
+SELECT
+    parent.relname      AS parent,
+    child.relname       AS child,
+    pg_total_relation_size(child.relname::regclass) as child_size
+FROM pg_inherits
+    JOIN pg_class parent            ON pg_inherits.inhparent = parent.oid
+    JOIN pg_class child             ON pg_inherits.inhrelid   = child.oid
+) as b
+group by 1 order by 1;
+
 --查看业务表（排除分区表子表）
-select relname from pg_class where relkind = 'r' and relname like 't\_%' and not exists(select 'x' from pg_inherits where pg_inherits.inhrelid = pg_class.oid) order by 1;
+select relname from pg_class where relkind = 'r' and relname like 't\_%' and not exists(select 'x' from pg_inherits where pg_inherits.inhrelid = pg_class.oid) and relname not like '%201%' order by 1;
 
 ---22. 时间转换
 select to_char(snap_ts,'YYYY-MM-DD HH24:MI:SS')
@@ -338,7 +349,8 @@ select snap_ts, size, (size - lead(size) over(order by snap_ts desc)) as differe
 ---24. 查询各应用使用的连接数
 select now(),application_name, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by 1,2 order by 2;
 select application_name, datname, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, datname order by 2;
-select application_name, client_addr, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, client_addr order by 2;
+select application_name, client_addr, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, client_addr order by 1;
+select application_name, datname, client_addr, count(*) from pg_stat_activity where pid <> pg_backend_pid() group by application_name, datname, client_addr order by 1,2;
 
 ---25. copy命令使用
 COPY ( 
@@ -354,7 +366,7 @@ grant select on all tables in schema  bike_order to viewflowadmin  WITH GRANT OP
 grant select on all tables in schema  power_bike to viewflowadmin  WITH GRANT OPTION;
 grant select on all tables in schema  cms to viewflowadmin  WITH GRANT OPTION;
 grant select on all tables in schema  bike_pay to viewflowadmin  WITH GRANT OPTION;
-
+grant select on all tables in schema  bike to viewflowadmin  WITH GRANT OPTION;
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON all tables in schema bike TO bike_ext_user;
 
@@ -377,12 +389,29 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA sms GRANT SELECT ON TABLES TO viewflowadmin W
 
 
 create user hellobike_ro encrypted password 'xxxx';
-GRANT USAGE ON SCHEMA hello_taxi TO  hellobike_ro;
-GRANT CONNECT ON DATABASE hello_hitch_match to hellobike_ro;
+GRANT USAGE ON SCHEMA hello_pivot_bbs TO  hellobike_ro;
+GRANT CONNECT ON DATABASE hello_pivot_bbs to hellobike_ro;
 ALTER user  hellobike_ro set statement_timeout='30s';
 ALTER user  hellobike_ro CONNECTION LIMIT 20;
-GRANT SELECT ON ALL TABLES IN SCHEMA  hello_hitch_match TO hellobike_ro;
-ALTER DEFAULT PRIVILEGES IN SCHEMA hello_hitch_match GRANT SELECT ON TABLES TO hellobike_ro;
+GRANT SELECT ON ALL TABLES IN SCHEMA  hello_pivot_bbs TO hellobike_ro;
+ALTER DEFAULT PRIVILEGES IN SCHEMA hello_pivot_bbs GRANT SELECT ON TABLES TO hellobike_ro;
+
+GRANT USAGE ON SCHEMA powerbike_bos TO  hellobike_rw;
+GRANT CONNECT ON DATABASE powerbike_bos to  hellobike_rw;
+ALTER user  hellobike_rw set statement_timeout='100ms';
+ALTER user  hellobike_rw CONNECTION LIMIT 3;
+GRANT SELECT,update,insert,delete ON ALL TABLES IN SCHEMA powerbike_bos TO hellobike_rw;
+ALTER DEFAULT PRIVILEGES IN SCHEMA powerbike_bos GRANT SELECT,update,insert,delete ON TABLES TO hellobike_rw;
+ALTER DEFAULT PRIVILEGES IN SCHEMA power_ride_card GRANT SELECT,update,insert,delete ON TABLES TO hellobike_rw;
+GRANT SELECT,update,insert,delete ON ALL TABLES IN SCHEMA power_ride_card TO hellobike_rw;
+
+
+create user db_alphapay_account_meta_bi encrypted password 'XXXX';
+ALTER user  db_alphapay_account_meta_bi set statement_timeout='180s';
+GRANT USAGE ON SCHEMA db_alphapay_account_meta TO  db_alphapay_account_meta_bi;
+GRANT CONNECT ON DATABASE db_alphapay_account_meta to db_alphapay_account_meta_bi;
+GRANT SELECT ON ALL TABLES IN SCHEMA  db_alphapay_account_meta TO db_alphapay_account_meta_bi;
+ALTER DEFAULT PRIVILEGES IN SCHEMA db_alphapay_account_meta GRANT SELECT ON TABLES TO db_alphapay_account_meta_bi;
 
 ---27. 查询结果分隔符修改
 \a
@@ -497,7 +526,11 @@ update pg_index set indisvalid=false where indexrelid='i_ii'::regclass;
 update pg_index set indisvalid=true where indexrelid='i_ii'::regclass;
 
 ---42. 查看主从差异
-select client_addr,pg_current_xlog_location(),sent_location,write_location,replay_location,pg_size_pretty(pg_xlog_location_diff(pg_current_xlog_location(), replay_location)) as diff from pg_stat_replication;
+select usename,client_addr,pg_current_xlog_location(),sent_location,write_location,replay_location,pg_size_pretty(pg_xlog_location_diff(pg_current_xlog_location(), replay_location)) as diff from pg_stat_replication;
+
+select usename,client_addr,pg_wal_lsn_diff(pg_current_wal_lsn(), replay_lsn),sent_lsn,write_lsn,replay_lsn,pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), replay_lsn)) as diff, state, sync_state from pg_stat_replication where application_name <>'standby1';
+
+select client_addr,pg_current_xlog_location(),sent_location,write_location,replay_location,pg_size_pretty(pg_xlog_location_diff(pg_current_xlog_location(), replay_location)) as diff, pg_size_pretty(pg_xlog_location_diff(pg_current_xlog_location(), sent_location)) as sent_diff from pg_stat_replication;
 
 ---43. 导出表结构
 pg_dump bike -p 3430 -h 10.111.50.187 -U bike --schema-only --encoding='UTF8' --table='t_student_award_record' |grep -v "^\-\-" |grep -v "^$" |grep -v "^SET " |grep -v "^REVOKE " |grep -v "^GRANT " 
@@ -539,17 +572,18 @@ WHERE NOT waiting.GRANTED
 psql options=-csession_preload_libraries=''
 
 ---46. 停掉指定应用的所有连接
+select pid from pg_stat_activity where usename is not null and pid <> pg_backend_pid() and application_name = 'AppHelloHitchMatchService' and datname = 'hello_hitch_match';
 do language plpgsql $$
 declare
   v_pid integer;
 begin
-  for v_pid in select pid from pg_stat_activity where usename is not null and pid <> pg_backend_pid() and application_name = 'APPxxx' and datname = 'bike'
+  for v_pid in select pid from pg_stat_activity where usename is not null and pid <> pg_backend_pid() and application_name = 'AppHelloHitchMatchService' and datname = 'hello_hitch_match'
   loop
       perform pg_terminate_backend(v_pid);
   end loop; 
 end;
 $$;
-
+select pid from pg_stat_activity where usename is not null and pid <> pg_backend_pid() and application_name = 'AppHelloHitchMatchService' and datname = 'hello_hitch_match';
 
 ---47. 停掉指定用户连接的应用
 do language plpgsql $$
@@ -562,3 +596,56 @@ begin
   end loop; 
 end;
 $$;
+
+---48. 查看表的列个数
+
+select * from (
+  select (select relname from pg_class where oid = pg_attribute.attrelid) as table_name, count(*) as column_num
+    from pg_attribute
+   where attnum >= 1
+   group by attrelid
+) as b
+where b.table_name not like '%201%' and table_name like 't_%'
+order by 2 desc;
+
+---
+select t3.nspname||'.'||t2.relname from pg_class t2  join pg_namespace t3 on t2.relnamespace=t3.oid where (t2.relname like 't\_%' or t2.relname like 'snap\_%') and t2.relkind in ('t','r','p') and age(relfrozenxid)> 400000000 order by age(relfrozenxid)
+
+---
+WITH RECURSIVE views AS (
+   -- get the directly depending views
+   SELECT v.oid::regclass AS view,
+          1 AS level
+   FROM pg_depend AS d
+      JOIN pg_rewrite AS r
+         ON r.oid = d.objid
+      JOIN pg_class AS v
+         ON v.oid = r.ev_class
+   WHERE v.relkind = 'v'
+     AND d.classid = 'pg_rewrite'::regclass
+     AND d.refclassid = 'pg_class'::regclass
+     AND d.deptype = 'n'
+     AND d.refobjid = 't1'::regclass
+UNION ALL
+   -- add the views that depend on these
+   SELECT v.oid::regclass,
+          views.level + 1
+   FROM views
+      JOIN pg_depend AS d
+         ON d.refobjid = views.view
+      JOIN pg_rewrite AS r  
+         ON r.oid = d.objid
+      JOIN pg_class AS v    
+         ON v.oid = r.ev_class
+   WHERE v.relkind = 'v'   
+     AND d.classid = 'pg_rewrite'::regclass
+     AND d.refclassid = 'pg_class'::regclass
+     AND d.deptype = 'n'   
+     AND v.oid <> views.view  -- avoid loop
+)
+SELECT format('CREATE VIEW %s AS%s',
+              view,
+              pg_get_viewdef(view))
+FROM views
+GROUP BY view
+ORDER BY max(level);
